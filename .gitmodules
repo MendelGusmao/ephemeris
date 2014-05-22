@@ -10,3 +10,9 @@
 [submodule "lib/middleware/render"]
 	path = lib/middleware/render
 	url = https://github.com/martini-contrib/render
+[submodule "lib/gorm"]
+	path = lib/gorm
+	url = https://github.com/jinzhu/gorm
+[submodule "lib/pq"]
+	path = lib/pq
+	url = https://github.com/lib/pq
