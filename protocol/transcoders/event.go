@@ -3,6 +3,7 @@ package transcoders
 import (
 	"events/models"
 	"events/protocol"
+	"strconv"
 	"time"
 )
 
@@ -50,7 +51,7 @@ func EventRequestToEvent(from *protocol.EventRequest) (*models.Event, []error) {
 
 func EventToEventResponse(from *models.Event) *protocol.EventResponse {
 	return &protocol.EventResponse{
-		Id:                    from.Id,
+		Id:                    strconv.Itoa(from.Id),
 		Name:                  from.Name,
 		Place:                 from.Place,
 		Description:           from.Description,

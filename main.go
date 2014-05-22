@@ -3,10 +3,12 @@ package main
 import (
 	"events/config"
 	_ "events/handlers"
+	"events/lib/gorm"
 	"events/lib/martini"
 	"events/lib/middleware/render"
 	"events/lib/middleware/sessions"
 	"events/middleware"
+	"events/models"
 	"events/routes"
 	"fmt"
 	"os"
@@ -14,14 +16,13 @@ import (
 
 func main() {
 	readConfiguration()
+	buildDatabase()
 
 	m := martini.Classic()
 
 	store := sessions.NewCookieStore([]byte(config.Events.Session.Secret))
 	databaseOptions := middleware.DatabaseOptions{
-		URL:       config.Events.Database.URL,
-		Name:      config.Events.Database.Name,
-		Monotonic: config.Events.Database.Monotonic,
+		URL: config.Events.Database.URL,
 	}
 
 	m.Use(sessions.Sessions(config.Events.Session.Name, store))
@@ -56,5 +57,17 @@ func readConfiguration() {
 	if err := config.Load(configFilename); err != nil {
 		fmt.Println("Error loading configuration:", err)
 		os.Exit(1)
+	}
+}
+
+func buildDatabase() {
+	db, err := gorm.Open("postgres", config.Events.Database.URL)
+
+	if err != nil {
+		panic(err)
+	}
+
+	for _, model := range models.Models {
+		db.AutoMigrate(model)
 	}
 }

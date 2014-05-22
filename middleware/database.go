@@ -1,29 +1,25 @@
 package middleware
 
 import (
+	"events/lib/gorm"
 	"events/lib/martini"
-	"labix.org/v2/mgo"
+	_ "events/lib/pq"
 )
 
 type DatabaseOptions struct {
-	URL       string
-	Name      string
-	Monotonic bool
+	URL string
 }
 
 func Database(databaseOptions DatabaseOptions) martini.Handler {
-	session, err := mgo.Dial(databaseOptions.URL)
-
-	if err != nil {
-		panic(err)
-	}
-
-	session.SetMode(mgo.Monotonic, databaseOptions.Monotonic)
-
 	return func(c martini.Context) {
-		s := session.Clone()
-		c.Map(s.DB(databaseOptions.Name))
-		defer s.Close()
+		db, err := gorm.Open("postgres", databaseOptions.URL)
+
+		if err != nil {
+			panic(err)
+		}
+
+		c.Map(db)
+		defer db.Close()
 		c.Next()
 	}
 }

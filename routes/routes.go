@@ -8,8 +8,8 @@ type registrator func(m *martini.ClassicMartini)
 
 var registrators = make([]registrator, 0)
 
-func Register(registrator) {
-	registrators = append(registrators)
+func Register(r registrator) {
+	registrators = append(registrators, r)
 }
 
 func Apply(m *martini.ClassicMartini) {

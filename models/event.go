@@ -13,7 +13,7 @@ var (
 )
 
 type Event struct {
-	Id                    string
+	Id                    int
 	Name                  string
 	Place                 string
 	Description           string
@@ -32,3 +32,7 @@ type Event struct {
 type EventVisibility string
 
 type EventStatus string
+
+func init() {
+	register(Event{})
+}
