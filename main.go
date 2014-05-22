@@ -2,6 +2,7 @@ package main
 
 import (
 	"events/config"
+	_ "events/handlers"
 	"events/middleware"
 	"events/routes"
 	"fmt"

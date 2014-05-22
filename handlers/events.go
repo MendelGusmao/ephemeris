@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"events/models"
+	"events/protocol"
+	"events/protocol/transcoders"
 	"events/routes"
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/binding"
@@ -19,7 +21,7 @@ const (
 func init() {
 	routes.Register(func(m *martini.ClassicMartini) {
 		m.Get("/events", events_list)
-		m.Post("/events", binding.Bind(models.Event{}), events_create)
+		m.Post("/events", binding.Bind(protocol.EventRequest{}), events_create)
 
 		m.Get("/event/:id", event)
 		m.Patch("/event/:id", event_update)
@@ -28,13 +30,20 @@ func init() {
 }
 
 func events_create(
-	event models.Event,
+	eventRequest protocol.EventRequest,
 	session sessions.Session,
 	renderer render.Render,
 	database *mgo.Database,
 	response http.ResponseWriter,
 ) {
 	collection := database.C(eventsCollection)
+	event, errs := transcoders.EventRequestToEvent(&eventRequest)
+
+	if len(errs) > 0 {
+		renderer.JSON(500, errs)
+		return
+	}
+
 	err := collection.Insert(event)
 
 	if err != nil {
@@ -43,7 +52,7 @@ func events_create(
 	}
 
 	response.Header().Add("Location", "/events/"+event.Id)
-	response.Write(201)
+	response.WriteHeader(201)
 }
 
 func events_list(
@@ -63,14 +72,14 @@ func event(
 	collection := database.C(eventsCollection)
 	event := models.Event{}
 
-	err := collection.Find(bson.M{"id": params["id"]})
+	err := collection.Find(bson.M{"id": params["id"]}).One(&event)
 
 	if err != nil {
 		renderer.JSON(500, err)
 		return
 	}
 
-	renderer.JSON(200, event)
+	renderer.JSON(200, transcoders.EventToEventResponse(&event))
 }
 
 func event_update(

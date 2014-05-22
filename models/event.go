@@ -13,20 +13,20 @@ var (
 )
 
 type Event struct {
-	Id                    string          `json:"id"`
-	Name                  string          `json:"name"`
-	Place                 string          `json:"place"`
-	Description           string          `json:"description"`
-	URL                   string          `json:"url"`
-	LogoURL               string          `json:"logoURL"`
-	Beginning             time.Time       `json:"beginning"`
-	End                   time.Time       `json:"end"`
-	RegistrationBeginning time.Time       `json:"registrationBeginning"`
-	RegistrationEnd       time.Time       `json:"registrationEnd"`
-	Visibility            EventVisibility `json:"visibility"`
-	Status                EventStatus     `json:"status"`
-	CreatedAt             time.Time       `json:"created_at"`
-	UpdatedAt             time.Time       `json:"updated_at"`
+	Id                    string
+	Name                  string
+	Place                 string
+	Description           string
+	URL                   string
+	LogoURL               string
+	Beginning             time.Time
+	End                   time.Time
+	RegistrationBeginning time.Time
+	RegistrationEnd       time.Time
+	Visibility            EventVisibility
+	Status                EventStatus
+	CreatedAt             time.Time
+	UpdatedAt             time.Time
 }
 
 type EventVisibility string
