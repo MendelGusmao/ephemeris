@@ -1,5 +1,6 @@
 deps:
 	git submodule init
+	git submodule update
 	bower install
 
 test:
