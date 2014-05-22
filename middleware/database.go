@@ -18,7 +18,7 @@ func Database(databaseOptions DatabaseOptions) martini.Handler {
 			panic(err)
 		}
 
-		c.Map(db)
+		c.Map(&db)
 		defer db.Close()
 		c.Next()
 	}

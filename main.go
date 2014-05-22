@@ -6,7 +6,7 @@ import (
 	"events/lib/gorm"
 	"events/lib/martini"
 	"events/lib/middleware/render"
-	"events/lib/middleware/sessions"
+	// "events/lib/middleware/sessions"
 	"events/middleware"
 	"events/models"
 	"events/routes"
@@ -20,12 +20,12 @@ func main() {
 
 	m := martini.Classic()
 
-	store := sessions.NewCookieStore([]byte(config.Events.Session.Secret))
+	// store := sessions.NewCookieStore([]byte(config.Events.Session.Secret))
 	databaseOptions := middleware.DatabaseOptions{
 		URL: config.Events.Database.URL,
 	}
 
-	m.Use(sessions.Sessions(config.Events.Session.Name, store))
+	// m.Use(sessions.Sessions(config.Events.Session.Name, store))
 	m.Use(render.Renderer())
 	m.Use(middleware.Database(databaseOptions))
 
