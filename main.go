@@ -29,7 +29,9 @@ func main() {
 	m.Use(render.Renderer())
 	m.Use(middleware.Database(databaseOptions))
 
-	routes.Apply(m)
+	m.Group(config.Events.APIRoot, func(r martini.Router) {
+		routes.Apply(r)
+	})
 
 	m.Run()
 }

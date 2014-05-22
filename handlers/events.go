@@ -14,13 +14,13 @@ import (
 )
 
 func init() {
-	routes.Register(func(m *martini.ClassicMartini) {
-		m.Get("/events", events)
-		m.Post("/events", binding.Bind(protocol.EventRequest{}), createEvent)
+	routes.Register(func(r martini.Router) {
+		r.Get("/events", events)
+		r.Post("/events", binding.Bind(protocol.EventRequest{}), createEvent)
 
-		m.Get("/event/:id", event)
-		m.Patch("/event/:id", binding.Bind(protocol.EventRequest{}), updateEvent)
-		m.Delete("/event/:id", deleteEvent)
+		r.Get("/event/:id", event)
+		r.Patch("/event/:id", binding.Bind(protocol.EventRequest{}), updateEvent)
+		r.Delete("/event/:id", deleteEvent)
 	})
 }
 

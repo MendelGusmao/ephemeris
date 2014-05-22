@@ -8,14 +8,13 @@ import (
 var Events eventsConfig
 
 type eventsConfig struct {
+	APIRoot  string
 	Database databaseConfig
 	Session  sessionConfig
 }
 
 type databaseConfig struct {
-	URL       string
-	Name      string
-	Monotonic bool
+	URL string
 }
 
 type sessionConfig struct {
