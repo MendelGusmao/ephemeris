@@ -33,14 +33,14 @@ func createEvent(
 	event, errs := transcoders.EventRequestToEvent(&eventRequest)
 
 	if len(errs) > 0 {
-		renderer.JSON(http.StatusInternalServerError, errs)
+		renderer.JSON(http.StatusBadRequest, errs)
 		return
 	}
 
-	err := database.Save(&event)
+	query := database.Save(&event)
 
-	if err != nil {
-		renderer.JSON(http.StatusInternalServerError, err)
+	if query.Error != nil {
+		renderer.JSON(http.StatusInternalServerError, query.Error.Error())
 		return
 	}
 
@@ -54,7 +54,12 @@ func events(
 	response http.ResponseWriter,
 ) {
 	events := make([]models.Event, 0)
-	database.Find(&events)
+	query := database.Find(&events)
+
+	if query.Error != nil {
+		renderer.JSON(http.StatusInternalServerError, query.Error.Error())
+		return
+	}
 
 	if len(events) == 0 {
 		response.WriteHeader(http.StatusNoContent)
@@ -89,7 +94,7 @@ func event(
 		return
 	}
 
-	renderer.JSON(200, transcoders.EventToEventResponse(&event))
+	renderer.JSON(http.StatusOK, transcoders.EventToEventResponse(&event))
 }
 
 func updateEvent(
