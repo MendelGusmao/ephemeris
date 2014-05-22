@@ -1,14 +1,14 @@
 package handlers
 
 import (
+	"events/lib/martini"
+	"events/lib/middleware/binding"
+	"events/lib/middleware/render"
+	"events/lib/middleware/sessions"
 	"events/models"
 	"events/protocol"
 	"events/protocol/transcoders"
 	"events/routes"
-	"github.com/go-martini/martini"
-	"github.com/martini-contrib/binding"
-	"github.com/martini-contrib/render"
-	"github.com/martini-contrib/sessions"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	"net/http"

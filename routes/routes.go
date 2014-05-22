@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/go-martini/martini"
+	"events/lib/martini"
 )
 
 type registrator func(m *martini.ClassicMartini)

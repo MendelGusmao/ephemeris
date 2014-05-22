@@ -3,12 +3,12 @@ package main
 import (
 	"events/config"
 	_ "events/handlers"
+	"events/lib/martini"
+	"events/lib/middleware/render"
+	"events/lib/middleware/sessions"
 	"events/middleware"
 	"events/routes"
 	"fmt"
-	"github.com/go-martini/martini"
-	"github.com/martini-contrib/render"
-	"github.com/martini-contrib/sessions"
 	"os"
 )
 

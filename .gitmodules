@@ -1,0 +1,12 @@
+[submodule "lib/martini"]
+	path = lib/martini
+	url = https://github.com/go-martini/martini
+[submodule "lib/middleware/binding"]
+	path = lib/middleware/binding
+	url = https://github.com/martini-contrib/binding
+[submodule "lib/middleware/sessions"]
+	path = lib/middleware/sessions
+	url = https://github.com/martini-contrib/sessions
+[submodule "lib/middleware/render"]
+	path = lib/middleware/render
+	url = https://github.com/martini-contrib/render

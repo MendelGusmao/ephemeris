@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/go-martini/martini"
+	"events/lib/martini"
 	"labix.org/v2/mgo"
 )
 

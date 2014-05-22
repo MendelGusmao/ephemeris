@@ -1,7 +1,7 @@
 package protocol
 
 import (
-	"github.com/martini-contrib/binding"
+	"events/lib/middleware/binding"
 	"net/http"
 )
 
