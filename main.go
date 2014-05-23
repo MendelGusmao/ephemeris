@@ -64,6 +64,7 @@ func readConfiguration() {
 
 func buildDatabase() {
 	db, err := gorm.Open("postgres", config.Events.Database.URL)
+	defer db.Close()
 
 	if err != nil {
 		panic(err)

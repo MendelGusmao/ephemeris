@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func EventRequestToEvent(from *protocol.EventRequest) (*models.Event, []error) {
+func EventRequestToEvent(from *protocol.EventRequest, id string) (*models.Event, []error) {
 	errs := make([]error, 0)
 
 	registrationBeginning, err := time.Parse(time.RFC3339, from.RegistrationBeginning)
@@ -34,7 +34,7 @@ func EventRequestToEvent(from *protocol.EventRequest) (*models.Event, []error) {
 		errs = append(errs, err)
 	}
 
-	return &models.Event{
+	to := &models.Event{
 		Name:                  from.Name,
 		Place:                 from.Place,
 		Description:           from.Description,
@@ -46,7 +46,19 @@ func EventRequestToEvent(from *protocol.EventRequest) (*models.Event, []error) {
 		Status:                models.EventStatus(from.Status),
 		RegistrationBeginning: registrationBeginning,
 		RegistrationEnd:       registrationEnd,
-	}, errs
+	}
+
+	if len(id) > 0 {
+		intId, err := strconv.Atoi(id)
+
+		if err != nil {
+			errs = append(errs, err)
+		}
+
+		to.Id = intId
+	}
+
+	return to, errs
 }
 
 func EventToEventResponse(from *models.Event) *protocol.EventResponse {

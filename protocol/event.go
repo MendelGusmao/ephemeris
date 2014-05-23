@@ -20,7 +20,7 @@ type EventRequest struct {
 }
 
 type EventResponse struct {
-	Id                    string `json:"name"`
+	Id                    string `json:"id"`
 	Name                  string `json:"name"`
 	Place                 string `json:"place"`
 	Description           string `json:"description"`
