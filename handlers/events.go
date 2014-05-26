@@ -83,7 +83,6 @@ func event(
 
 	if query.Error != nil {
 		if query.Error == gorm.RecordNotFound {
-			logger.Log(query.Error.Error())
 			response.WriteHeader(http.StatusNotFound)
 			return
 		}
