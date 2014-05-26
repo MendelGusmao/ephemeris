@@ -5,9 +5,9 @@ import (
 	"io/ioutil"
 )
 
-var Ephemeris eventsConfig
+var Ephemeris ephemerisConfig
 
-type eventsConfig struct {
+type ephemerisConfig struct {
 	APIRoot  string
 	Database databaseConfig
 	Session  sessionConfig
