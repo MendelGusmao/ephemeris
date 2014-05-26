@@ -117,8 +117,7 @@ func updateEvent(
 		return
 	}
 
-	response.Header().Add("Location", fmt.Sprintf("/events/%d", event.Id))
-	response.WriteHeader(http.StatusCreated)
+	response.WriteHeader(http.StatusOK)
 }
 
 func deleteEvent(
