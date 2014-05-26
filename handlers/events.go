@@ -137,14 +137,20 @@ func deleteEvent(
 	renderer render.Render,
 	response http.ResponseWriter,
 ) {
-	query := database.Where("id = ?", params["id"]).Delete(&models.Event{})
+	event := models.Event{}
 
-	if query.Error != nil {
+	if query := database.Where("id = ?", params["id"]).Find(&event); query.Error != nil {
 		if query.Error == gorm.RecordNotFound {
 			response.WriteHeader(http.StatusNotFound)
 			return
 		}
 
+		logger.Log(query.Error.Error())
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if query := database.Where("id = ?", params["id"]).Delete(&event); query.Error != nil {
 		logger.Log(query.Error.Error())
 		response.WriteHeader(http.StatusInternalServerError)
 		return
