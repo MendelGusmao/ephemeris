@@ -63,13 +63,7 @@ func events(
 		return
 	}
 
-	responseEvents := make([]*protocol.EventResponse, len(events))
-
-	for index, event := range events {
-		responseEvents[index] = transcoders.EventToEventResponse(&event)
-	}
-
-	renderer.JSON(http.StatusOK, responseEvents)
+	renderer.JSON(http.StatusOK, events)
 }
 
 func event(
@@ -91,7 +85,7 @@ func event(
 		return
 	}
 
-	renderer.JSON(http.StatusOK, transcoders.EventToEventResponse(&event))
+	renderer.JSON(http.StatusOK, event)
 }
 
 func updateEvent(
