@@ -28,6 +28,7 @@ func main() {
 	// m.Use(sessions.Sessions(config.Events.Session.Name, store))
 	m.Use(render.Renderer())
 	m.Use(middleware.Database(databaseOptions))
+	m.Use(middleware.Logger())
 
 	m.Group(config.Events.APIRoot, func(r martini.Router) {
 		routes.Apply(r)
