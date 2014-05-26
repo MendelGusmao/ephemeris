@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"events/lib/martini"
+	"ephemeris/lib/martini"
 )
 
 type registrator func(r martini.Router)

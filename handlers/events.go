@@ -1,15 +1,15 @@
 package handlers
 
 import (
-	"events/lib/gorm"
-	"events/lib/martini"
-	"events/lib/middleware/binding"
-	"events/lib/middleware/render"
-	"events/middleware"
-	"events/models"
-	"events/protocol"
-	"events/protocol/transcoders"
-	"events/routes"
+	"ephemeris/lib/gorm"
+	"ephemeris/lib/martini"
+	"ephemeris/lib/middleware/binding"
+	"ephemeris/lib/middleware/render"
+	"ephemeris/middleware"
+	"ephemeris/models"
+	"ephemeris/protocol"
+	"ephemeris/protocol/transcoders"
+	"ephemeris/routes"
 	"fmt"
 	"net/http"
 )

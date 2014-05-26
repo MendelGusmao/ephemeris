@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"events/lib/gorm"
-	"events/lib/martini"
-	_ "events/lib/pq"
+	"ephemeris/lib/gorm"
+	"ephemeris/lib/martini"
+	_ "ephemeris/lib/pq"
 )
 
 type DatabaseOptions struct {

@@ -1,8 +1,8 @@
 package transcoders
 
 import (
-	"events/models"
-	"events/protocol"
+	"ephemeris/models"
+	"ephemeris/protocol"
 	"strconv"
 )
 

@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"events/lib/martini"
+	"ephemeris/lib/martini"
 	"log"
 	"net/http"
 	"os"
@@ -34,7 +34,7 @@ func Logger() martini.Handler {
 	return func(c martini.Context, req *http.Request) {
 		c.Map(&ApplicationLogger{
 			Request: req,
-			Logger:  log.New(os.Stdout, "[events] ", 0),
+			Logger:  log.New(os.Stdout, "[ephemeris] ", 0),
 		})
 
 		c.Next()

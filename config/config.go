@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 )
 
-var Events eventsConfig
+var Ephemeris eventsConfig
 
 type eventsConfig struct {
 	APIRoot  string
@@ -28,7 +28,7 @@ func Load(filename string) error {
 		return err
 	}
 
-	err = json.Unmarshal(content, &Events)
+	err = json.Unmarshal(content, &Ephemeris)
 	if err != nil {
 		return err
 	}

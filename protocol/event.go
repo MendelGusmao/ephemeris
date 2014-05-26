@@ -1,8 +1,8 @@
 package protocol
 
 import (
-	"events/lib/middleware/binding"
-	"events/models"
+	"ephemeris/lib/middleware/binding"
+	"ephemeris/models"
 	"net/http"
 	"net/url"
 	"time"
