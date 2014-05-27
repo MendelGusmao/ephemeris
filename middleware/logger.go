@@ -14,26 +14,26 @@ var (
 
 type ApplicationLogger struct {
 	*log.Logger
-	*http.Request
+	request *http.Request
 }
 
 func (logger *ApplicationLogger) Log(message string) {
-	addr := logger.Request.Header.Get("X-Real-IP")
+	addr := logger.request.Header.Get("X-Real-IP")
 	if addr == "" {
-		addr = logger.Request.Header.Get("X-Forwarded-For")
+		addr = logger.request.Header.Get("X-Forwarded-For")
 		if addr == "" {
-			addr = logger.Request.RemoteAddr
+			addr = logger.request.RemoteAddr
 		}
 	}
 
 	now := time.Now().Format(layout)
-	logger.Logger.Printf("%s %s for %s @ %s -> %s", logger.Request.Method, logger.Request.URL.Path, addr, now, message)
+	logger.Logger.Printf("%s %s for %s @ %s -> %s", logger.request.Method, logger.request.URL.Path, addr, now, message)
 }
 
 func Logger() martini.Handler {
 	return func(c martini.Context, req *http.Request) {
 		c.Map(&ApplicationLogger{
-			Request: req,
+			request: req,
 			Logger:  log.New(os.Stdout, "[ephemeris] ", 0),
 		})
 
