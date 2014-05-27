@@ -14,7 +14,8 @@ type ephemerisConfig struct {
 }
 
 type databaseConfig struct {
-	URL string
+	URL                string
+	MaxIdleConnections int
 }
 
 type sessionConfig struct {

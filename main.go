@@ -22,7 +22,8 @@ func main() {
 
 	// store := sessions.NewCookieStore([]byte(config.Ephemeris.Session.Secret))
 	databaseOptions := middleware.DatabaseOptions{
-		URL: config.Ephemeris.Database.URL,
+		URL:                config.Ephemeris.Database.URL,
+		MaxIdleConnections: config.Ephemeris.Database.MaxIdleConnections,
 	}
 
 	// m.Use(sessions.Sessions(config.Ephemeris.Session.Name, store))

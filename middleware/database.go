@@ -7,7 +7,8 @@ import (
 )
 
 type DatabaseOptions struct {
-	URL string
+	URL                string
+	MaxIdleConnections int
 }
 
 func Database(databaseOptions DatabaseOptions) martini.Handler {
@@ -17,6 +18,8 @@ func Database(databaseOptions DatabaseOptions) martini.Handler {
 		if err != nil {
 			panic(err)
 		}
+
+		db.DB().SetMaxIdleConns(databaseOptions.MaxIdleConnections)
 
 		c.Map(&db)
 		defer db.Close()
