@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-var (
+const (
 	EventVisibilityPublic  EventVisibility = "public"
 	EventVisibilityPrivate EventVisibility = "private"
 	EventStatusOpen        EventStatus     = "open"
