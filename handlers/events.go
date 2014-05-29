@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"ephemeris/handlers/helpers"
 	"ephemeris/lib/gorm"
 	"ephemeris/lib/martini"
 	"ephemeris/lib/middleware/binding"
@@ -10,7 +11,6 @@ import (
 	"ephemeris/protocol"
 	"ephemeris/protocol/transcoders"
 	"ephemeris/routes"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -43,13 +43,13 @@ func createEvent(
 	event.CreatedAt = time.Now().UTC()
 	event.UpdatedAt = time.Now().UTC()
 
-	if query := database.Save(&event); query.Error != nil {
+	if query := database.Save(event); query.Error != nil {
 		logger.Log(query.Error.Error())
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	response.Header().Add("Location", fmt.Sprintf("/events/%d", event.Id))
+	response.Header().Add("Location", helpers.URI("events/%d", event.Id))
 	response.WriteHeader(http.StatusCreated)
 }
 
@@ -122,7 +122,7 @@ func updateEvent(
 
 	event.UpdatedAt = time.Now().UTC()
 
-	if query := database.Save(&event); query.Error != nil {
+	if query := database.Save(event); query.Error != nil {
 		logger.Log(query.Error.Error())
 		response.WriteHeader(http.StatusInternalServerError)
 		return
