@@ -11,6 +11,7 @@ import (
 	"ephemeris/protocol"
 	"ephemeris/protocol/transcoders"
 	"ephemeris/routes"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -49,6 +50,7 @@ func createEvent(
 		return
 	}
 
+	response.Header().Add("X-Object-Id", fmt.Sprintf("%d", event.Id))
 	response.Header().Add("Location", helpers.URI("events/%d", event.Id))
 	response.WriteHeader(http.StatusCreated)
 }
