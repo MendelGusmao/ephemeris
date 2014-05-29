@@ -12,6 +12,7 @@ import (
 	"ephemeris/routes"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func init() {
@@ -39,6 +40,9 @@ func createEvent(
 		return
 	}
 
+	event.CreatedAt = time.Now().UTC()
+	event.UpdatedAt = time.Now().UTC()
+
 	if query := database.Save(&event); query.Error != nil {
 		logger.Log(query.Error.Error())
 		response.WriteHeader(http.StatusInternalServerError)
@@ -60,11 +64,6 @@ func events(
 	if query := database.Find(&events); query.Error != nil {
 		logger.Log(query.Error.Error())
 		response.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	if len(events) == 0 {
-		response.WriteHeader(http.StatusNoContent)
 		return
 	}
 
@@ -120,6 +119,8 @@ func updateEvent(
 		renderer.JSON(http.StatusBadRequest, errs)
 		return
 	}
+
+	event.UpdatedAt = time.Now().UTC()
 
 	if query := database.Save(&event); query.Error != nil {
 		logger.Log(query.Error.Error())
