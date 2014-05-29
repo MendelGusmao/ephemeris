@@ -3,6 +3,7 @@ package protocol
 import (
 	"ephemeris/lib/middleware/binding"
 	"ephemeris/models"
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
@@ -12,8 +13,8 @@ type EventRequest struct {
 	Name                  string    `json:"name" binding:"required"`
 	Place                 string    `json:"place" binding:"required"`
 	Description           string    `json:"description" binding:"required"`
-	URL                   string    `json:"url" binding:"required"`
-	LogoURL               string    `json:"logoURL" binding:"required"`
+	URL                   string    `json:"URL"`
+	LogoURL               string    `json:"logoURL"`
 	Beginning             time.Time `json:"beginning" binding:"required"`
 	End                   time.Time `json:"end" binding:"required"`
 	RegistrationBeginning time.Time `json:"registrationBeginning" binding:"required"`
@@ -109,22 +110,22 @@ func (event *EventRequest) validateURLs(errors *binding.Errors) {
 }
 
 func (event *EventRequest) validateEnums(errors *binding.Errors) {
-	if event.Visibility != models.EventVisibilityPrivate ||
+	if event.Visibility != models.EventVisibilityPrivate &&
 		event.Visibility != models.EventVisibilityPublic {
 		*errors = append(*errors, binding.Error{
 			FieldNames:     []string{"visibility"},
 			Classification: "EnumError",
-			Message:        "Invalid visibility",
+			Message:        fmt.Sprintf("Invalid visibility '%s'", event.Visibility),
 		})
 	}
 
-	if event.Status != models.EventStatusCancelled ||
-		event.Status != models.EventStatusOpen ||
+	if event.Status != models.EventStatusCancelled &&
+		event.Status != models.EventStatusOpen &&
 		event.Status != models.EventStatusOnHold {
 		*errors = append(*errors, binding.Error{
 			FieldNames:     []string{"status"},
 			Classification: "EnumError",
-			Message:        "Invalid status",
+			Message:        fmt.Sprintf("Invalid status '%s'", event.Status),
 		})
 	}
 }
