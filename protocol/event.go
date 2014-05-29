@@ -109,11 +109,8 @@ func (event *EventRequest) validateURLs(errors *binding.Errors) {
 }
 
 func (event *EventRequest) validateEnums(errors *binding.Errors) {
-	visibility := models.EventVisibility(event.Visibility)
-	status := models.EventStatus(event.Status)
-
-	if visibility != models.EventVisibilityPrivate ||
-		visibility != models.EventVisibilityPublic {
+	if event.Visibility != models.EventVisibilityPrivate ||
+		event.Visibility != models.EventVisibilityPublic {
 		*errors = append(*errors, binding.Error{
 			FieldNames:     []string{"visibility"},
 			Classification: "EnumError",
@@ -121,9 +118,9 @@ func (event *EventRequest) validateEnums(errors *binding.Errors) {
 		})
 	}
 
-	if status != models.EventStatusCancelled ||
-		status != models.EventStatusOpen ||
-		status != models.EventStatusOnHold {
+	if event.Status != models.EventStatusCancelled ||
+		event.Status != models.EventStatusOpen ||
+		event.Status != models.EventStatusOnHold {
 		*errors = append(*errors, binding.Error{
 			FieldNames:     []string{"status"},
 			Classification: "EnumError",
