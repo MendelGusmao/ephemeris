@@ -12,7 +12,6 @@ import (
 	"ephemeris/routes"
 	"fmt"
 	"net/http"
-	"time"
 )
 
 func init() {
@@ -35,9 +34,6 @@ func createEvent(
 ) {
 	event := models.Event{}
 	transcoders.EventRequestToEvent(&eventRequest, &event)
-
-	event.CreatedAt = time.Now().UTC()
-	event.UpdatedAt = time.Now().UTC()
 
 	if query := database.Save(&event); query.Error != nil {
 		logger.Log(query.Error.Error())
@@ -112,8 +108,6 @@ func updateEvent(
 	}
 
 	transcoders.EventRequestToEvent(&eventRequest, &event)
-
-	event.UpdatedAt = time.Now().UTC()
 
 	if query := database.Save(event); query.Error != nil {
 		logger.Log(query.Error.Error())
