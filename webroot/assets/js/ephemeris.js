@@ -3,4 +3,5 @@
 angular.module('ephemeris', ['ngResource', 'ui.router', 'ui.bootstrap'])
   .config(['$locationProvider', function($locationProvider) {
     $locationProvider.hashPrefix('!');
-  }]);
+  }])
+  .value('APIRoot', '/api');

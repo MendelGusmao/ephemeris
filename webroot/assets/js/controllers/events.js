@@ -26,7 +26,7 @@ angular.module('ephemeris')
       });
 
       event.$save(function(response, headers) {
-        $location.path('events/' + headers("X-Object-Id"));
+        $location.path(headers('Location'));
       }, function(errorResponse) {
         $scope.errors = errorResponse.data;
       });
@@ -52,7 +52,7 @@ angular.module('ephemeris')
       var event = $scope.event;
 
       event.$update(function(response, headers) {
-        $location.path('events/' + headers("X-Object-Id"));
+        $location.path(headers('Location'));
       }, function(errorResponse) {
         $scope.errors = errorResponse.data;
       });
