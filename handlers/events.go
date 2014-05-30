@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"ephemeris/handlers/helpers"
 	"ephemeris/lib/gorm"
 	"ephemeris/lib/martini"
 	"ephemeris/lib/middleware/binding"
@@ -34,24 +33,19 @@ func createEvent(
 	renderer render.Render,
 	response http.ResponseWriter,
 ) {
-	event, errs := transcoders.EventRequestToEvent(&eventRequest, "")
-
-	if len(errs) > 0 {
-		renderer.JSON(http.StatusBadRequest, errs)
-		return
-	}
+	event := models.Event{}
+	transcoders.EventRequestToEvent(&eventRequest, &event)
 
 	event.CreatedAt = time.Now().UTC()
 	event.UpdatedAt = time.Now().UTC()
 
-	if query := database.Save(event); query.Error != nil {
+	if query := database.Save(&event); query.Error != nil {
 		logger.Log(query.Error.Error())
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	response.Header().Add("X-Object-Id", fmt.Sprintf("%d", event.Id))
-	response.Header().Add("Location", helpers.URI("events/%d", event.Id))
+	response.Header().Add("Location", fmt.Sprintf("/events/%d", event.Id))
 	response.WriteHeader(http.StatusCreated)
 }
 
@@ -104,7 +98,9 @@ func updateEvent(
 	renderer render.Render,
 	response http.ResponseWriter,
 ) {
-	if query := database.Where("id = ?", params["id"]); query.Error != nil {
+	event := models.Event{}
+
+	if query := database.Where("id = ?", params["id"]).Find(&event); query.Error != nil {
 		if query.Error == gorm.RecordNotFound {
 			response.WriteHeader(http.StatusNotFound)
 			return
@@ -115,12 +111,7 @@ func updateEvent(
 		return
 	}
 
-	event, errs := transcoders.EventRequestToEvent(&eventRequest, params["id"])
-
-	if len(errs) > 0 {
-		renderer.JSON(http.StatusBadRequest, errs)
-		return
-	}
+	transcoders.EventRequestToEvent(&eventRequest, &event)
 
 	event.UpdatedAt = time.Now().UTC()
 
