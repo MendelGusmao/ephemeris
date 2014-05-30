@@ -12,6 +12,7 @@ import (
 	"ephemeris/routes"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func init() {
@@ -52,6 +53,7 @@ func events(
 	response http.ResponseWriter,
 ) {
 	events := make([]models.Event, 0)
+	lastModified := time.Now()
 
 	if query := database.Find(&events); query.Error != nil {
 		logger.Log(query.Error.Error())
@@ -59,6 +61,13 @@ func events(
 		return
 	}
 
+	for _, event := range events {
+		if event.UpdatedAt.Unix() > lastModified.Unix() {
+			lastModified = event.UpdatedAt
+		}
+	}
+
+	response.Header().Add("Last-Modified", lastModified.UTC().Format(time.RFC1123))
 	renderer.JSON(http.StatusOK, events)
 }
 
@@ -83,6 +92,7 @@ func event(
 		return
 	}
 
+	response.Header().Add("Last-Modified", event.CreatedAt.UTC().Format(time.RFC1123))
 	renderer.JSON(http.StatusOK, event)
 }
 
