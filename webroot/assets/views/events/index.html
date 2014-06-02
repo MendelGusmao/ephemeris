@@ -14,6 +14,10 @@
 		<p><b>status</b>: {{event.status}}</p>
 		<p><b>createdAt</b>: {{event.createdAt}}</p>
 		<p><b>updatedAt</b>: {{event.updatedAt}}</p>
+		<a href="#!/events/{{event.id}}">show</a>
+		<a class="btn btn-primary" data-ng-click="remove(event);">
+			<i class="glyphicon glyphicon-trash"></i>
+		</a>
 		<hr>
 	</div>
 </section>

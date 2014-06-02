@@ -27,8 +27,6 @@ angular.module('ephemeris')
 
       event.$save(function(response, headers) {
         $location.path(headers('Location'));
-      }, function(errorResponse) {
-        $scope.errors = errorResponse.data;
       });
     };
 
@@ -53,8 +51,6 @@ angular.module('ephemeris')
 
       event.$update(function(response, headers) {
         $location.path(headers('Location'));
-      }, function(errorResponse) {
-        $scope.errors = errorResponse.data;
       });
     };
   }]);
