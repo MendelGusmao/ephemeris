@@ -31,33 +31,31 @@ func createEvent(
 	eventRequest protocol.EventRequest,
 	logger *middleware.ApplicationLogger,
 	renderer render.Render,
-	response http.ResponseWriter,
 ) {
 	event := models.Event{}
 	transcoders.EventRequestToEvent(&eventRequest, &event)
 
 	if query := database.Save(&event); query.Error != nil {
 		logger.Log(query.Error.Error())
-		response.WriteHeader(http.StatusInternalServerError)
+		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
-	response.Header().Add("Location", fmt.Sprintf("/events/%d", event.Id))
-	response.WriteHeader(http.StatusCreated)
+	renderer.Header().Add("Location", fmt.Sprintf("/events/%d", event.Id))
+	renderer.Status(http.StatusCreated)
 }
 
 func events(
 	database *gorm.DB,
 	logger *middleware.ApplicationLogger,
 	renderer render.Render,
-	response http.ResponseWriter,
 ) {
 	events := make([]models.Event, 0)
 	lastModified := time.Time{}
 
 	if query := database.Find(&events); query.Error != nil {
 		logger.Log(query.Error.Error())
-		response.WriteHeader(http.StatusInternalServerError)
+		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
@@ -67,7 +65,7 @@ func events(
 		}
 	}
 
-	response.Header().Add("Last-Modified", lastModified.UTC().Format(time.RFC1123))
+	renderer.Header().Add("Last-Modified", lastModified.UTC().Format(time.RFC1123))
 	renderer.JSON(http.StatusOK, events)
 }
 
@@ -76,23 +74,22 @@ func event(
 	logger *middleware.ApplicationLogger,
 	params martini.Params,
 	renderer render.Render,
-	response http.ResponseWriter,
 ) {
 	event := models.Event{}
 	query := database.Where("id = ?", params["id"]).First(&event)
 
 	if query.Error != nil {
 		if query.Error == gorm.RecordNotFound {
-			response.WriteHeader(http.StatusNotFound)
+			renderer.Status(http.StatusNotFound)
 			return
 		}
 
 		logger.Log(query.Error.Error())
-		response.WriteHeader(http.StatusInternalServerError)
+		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
-	response.Header().Add("Last-Modified", event.CreatedAt.UTC().Format(time.RFC1123))
+	renderer.Header().Add("Last-Modified", event.CreatedAt.UTC().Format(time.RFC1123))
 	renderer.JSON(http.StatusOK, event)
 }
 
@@ -102,18 +99,17 @@ func updateEvent(
 	logger *middleware.ApplicationLogger,
 	params martini.Params,
 	renderer render.Render,
-	response http.ResponseWriter,
 ) {
 	event := models.Event{}
 
 	if query := database.Where("id = ?", params["id"]).Find(&event); query.Error != nil {
 		if query.Error == gorm.RecordNotFound {
-			response.WriteHeader(http.StatusNotFound)
+			renderer.Status(http.StatusNotFound)
 			return
 		}
 
 		logger.Log(query.Error.Error())
-		response.WriteHeader(http.StatusInternalServerError)
+		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
@@ -121,12 +117,12 @@ func updateEvent(
 
 	if query := database.Save(event); query.Error != nil {
 		logger.Log(query.Error.Error())
-		response.WriteHeader(http.StatusInternalServerError)
+		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
-	response.Header().Add("Location", fmt.Sprintf("/events/%d", event.Id))
-	response.WriteHeader(http.StatusOK)
+	renderer.Header().Add("Location", fmt.Sprintf("/events/%d", event.Id))
+	renderer.Status(http.StatusOK)
 }
 
 func deleteEvent(
@@ -134,26 +130,25 @@ func deleteEvent(
 	logger *middleware.ApplicationLogger,
 	params martini.Params,
 	renderer render.Render,
-	response http.ResponseWriter,
 ) {
 	event := models.Event{}
 
 	if query := database.Where("id = ?", params["id"]).Find(&event); query.Error != nil {
 		if query.Error == gorm.RecordNotFound {
-			response.WriteHeader(http.StatusNotFound)
+			renderer.Status(http.StatusNotFound)
 			return
 		}
 
 		logger.Log(query.Error.Error())
-		response.WriteHeader(http.StatusInternalServerError)
+		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
 	if query := database.Where("id = ?", params["id"]).Delete(&event); query.Error != nil {
 		logger.Log(query.Error.Error())
-		response.WriteHeader(http.StatusInternalServerError)
+		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
-	response.WriteHeader(http.StatusOK)
+	renderer.Status(http.StatusOK)
 }
