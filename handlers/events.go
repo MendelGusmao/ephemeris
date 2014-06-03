@@ -53,7 +53,7 @@ func events(
 	response http.ResponseWriter,
 ) {
 	events := make([]models.Event, 0)
-	lastModified := time.Now()
+	lastModified := time.Time{}
 
 	if query := database.Find(&events); query.Error != nil {
 		logger.Log(query.Error.Error())
@@ -125,6 +125,7 @@ func updateEvent(
 		return
 	}
 
+	response.Header().Add("Location", fmt.Sprintf("/events/%d", event.Id))
 	response.WriteHeader(http.StatusOK)
 }
 
