@@ -1,23 +1,18 @@
 'use strict';
 
 angular.module('ephemeris')
-  .factory('ErrorInterceptor', ['APIRoot', function(APIRoot) {
+  .factory('ErrorInterceptor', ['APIRoot', '$q', '$rootScope', function(APIRoot, $q, $rootScope) {
     return {
-      responseError: function(response) {
-        if (response.config.url.substr(0, APIRoot.length) != APIRoot) {
-          return;
+      responseError: function(rejection) {
+        if (rejection.config.url.substr(0, APIRoot.length) == APIRoot) {
+          var error = [{
+            message: [rejection.status, 'for', rejection.config.url].join(' ')
+          }];
+
+          $rootScope.$broadcast("messages", rejection.data || error);
         }
 
-        var errors = response.data || [];
-
-        for (var i in errors) {
-          var error = errors[i];
-          console.error(
-            '[ephemeris]',
-            error.classification, '@', error.fieldNames.join(', '),
-            '->', error.message
-          );
-        }
+        return $q.reject(rejection);
       }
     }
   }]);

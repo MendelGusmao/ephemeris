@@ -10,20 +10,7 @@ angular.module('ephemeris')
     }
 
     $scope.create = function() {
-      var event = new Events({
-        id: this.id,
-        name: this.name,
-        place: this.place,
-        description: this.description,
-        URL: this.URL,
-        logoURL: this.logoURL,
-        beginning: this.beginning,
-        end: this.end,
-        registrationBeginning: this.registrationBeginning,
-        registrationEnd: this.registrationEnd,
-        visibility: this.visibility,
-        status: this.status
-      });
+      var event = new Events($scope);
 
       event.$save(function(response, headers) {
         $location.path(headers('Location'));

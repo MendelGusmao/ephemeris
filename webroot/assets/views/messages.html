@@ -1,0 +1,9 @@
+<div data-ng-controller="MessagesController">
+	<ul data-ng-show="messages">
+		<li data-ng-repeat="message in messages">
+			<span data-ng-if="message.classification && message.fieldNames">
+				{{message.classification}} @ {{message.fieldNames.join(", ")}}:
+			</span> {{message.message}}
+		</li>
+	</ul>
+</div>

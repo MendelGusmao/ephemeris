@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ephemeris')
-  .factory('Events', ['APIRoot', 'ErrorInterceptor', '$resource', function(APIRoot, ErrorInterceptor, $resource) {
+  .factory('Events', ['APIRoot', '$resource', function(APIRoot, $resource) {
     return $resource(APIRoot + '/events/:id',
       {
         id: '@id'
