@@ -1,9 +1,9 @@
 package protocol
 
 import (
-	"ephemeris/lib/middleware/binding"
 	"ephemeris/models"
 	"fmt"
+	"github.com/martini-contrib/binding"
 	"net/http"
 	"net/url"
 	"time"

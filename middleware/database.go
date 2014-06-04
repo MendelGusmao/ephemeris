@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"ephemeris/lib/gorm"
-	"ephemeris/lib/martini"
-	_ "ephemeris/lib/pq"
+	"github.com/go-martini/martini"
+	"github.com/jinzhu/gorm"
+	_ "github.com/lib/pq"
 )
 
 type DatabaseOptions struct {

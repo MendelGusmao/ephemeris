@@ -1,16 +1,16 @@
 package handlers
 
 import (
-	"ephemeris/lib/gorm"
-	"ephemeris/lib/martini"
-	"ephemeris/lib/middleware/binding"
-	"ephemeris/lib/middleware/render"
 	"ephemeris/middleware"
 	"ephemeris/models"
 	"ephemeris/protocol"
 	"ephemeris/protocol/transcoders"
 	"ephemeris/routes"
 	"fmt"
+	"github.com/go-martini/martini"
+	"github.com/jinzhu/gorm"
+	"github.com/martini-contrib/binding"
+	"github.com/martini-contrib/render"
 	"net/http"
 	"time"
 )

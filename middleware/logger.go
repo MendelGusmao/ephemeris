@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"ephemeris/lib/martini"
+	"github.com/go-martini/martini"
 	"log"
 	"net/http"
 	"os"

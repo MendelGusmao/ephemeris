@@ -3,14 +3,14 @@ package main
 import (
 	"ephemeris/config"
 	_ "ephemeris/handlers"
-	"ephemeris/lib/gorm"
-	"ephemeris/lib/martini"
-	"ephemeris/lib/middleware/render"
-	// "ephemeris/lib/middleware/sessions"
 	"ephemeris/middleware"
 	"ephemeris/models"
 	"ephemeris/routes"
 	"fmt"
+	"github.com/go-martini/martini"
+	"github.com/jinzhu/gorm"
+	"github.com/martini-contrib/render"
+	"github.com/martini-contrib/sessions"
 	"os"
 )
 
@@ -20,13 +20,13 @@ func main() {
 
 	m := martini.Classic()
 
-	// store := sessions.NewCookieStore([]byte(config.Ephemeris.Session.Secret))
+	store := sessions.NewCookieStore([]byte(config.Ephemeris.Session.Secret))
 	databaseOptions := middleware.DatabaseOptions{
 		URL:                config.Ephemeris.Database.URL,
 		MaxIdleConnections: config.Ephemeris.Database.MaxIdleConnections,
 	}
 
-	// m.Use(sessions.Sessions(config.Ephemeris.Session.Name, store))
+	m.Use(sessions.Sessions(config.Ephemeris.Session.Name, store))
 	m.Use(render.Renderer())
 	m.Use(middleware.Database(databaseOptions))
 	m.Use(middleware.Logger())
