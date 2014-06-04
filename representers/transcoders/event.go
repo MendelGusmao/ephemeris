@@ -2,10 +2,10 @@ package transcoders
 
 import (
 	"ephemeris/models"
-	"ephemeris/protocol"
+	"ephemeris/representers"
 )
 
-func EventFromRequest(from *protocol.EventRequest, to *models.Event) {
+func EventFromRequest(from *representers.EventRequest, to *models.Event) {
 	to.Name = from.Name
 	to.Place = from.Place
 	to.Description = from.Description
@@ -19,8 +19,8 @@ func EventFromRequest(from *protocol.EventRequest, to *models.Event) {
 	to.RegistrationEnd = from.RegistrationEnd
 }
 
-func EventToResponse(from *models.Event) protocol.EventResponse {
-	return protocol.EventResponse{
+func EventToResponse(from *models.Event) representers.EventResponse {
+	return representers.EventResponse{
 		Name:                  from.Name,
 		Place:                 from.Place,
 		Description:           from.Description,

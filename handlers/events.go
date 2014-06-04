@@ -3,8 +3,8 @@ package handlers
 import (
 	"ephemeris/middleware"
 	"ephemeris/models"
-	"ephemeris/protocol"
-	"ephemeris/protocol/transcoders"
+	"ephemeris/representers"
+	"ephemeris/representers/transcoders"
 	"ephemeris/routes"
 	"fmt"
 	"github.com/go-martini/martini"
@@ -18,17 +18,17 @@ import (
 func init() {
 	routes.Register(func(r martini.Router) {
 		r.Get("/events", events)
-		r.Post("/events", binding.Bind(protocol.EventRequest{}), createEvent)
+		r.Post("/events", binding.Bind(representers.EventRequest{}), createEvent)
 
 		r.Get("/events/:id", event)
-		r.Put("/events/:id", binding.Bind(protocol.EventRequest{}), updateEvent)
+		r.Put("/events/:id", binding.Bind(representers.EventRequest{}), updateEvent)
 		r.Delete("/events/:id", deleteEvent)
 	})
 }
 
 func createEvent(
 	database *gorm.DB,
-	eventRequest protocol.EventRequest,
+	eventRequest representers.EventRequest,
 	logger *middleware.ApplicationLogger,
 	renderer render.Render,
 ) {
@@ -59,18 +59,18 @@ func events(
 		return
 	}
 
-	protocolEvents := make([]protocol.EventResponse, len(events))
+	representedEvents := make([]representers.EventResponse, len(events))
 
 	for index, event := range events {
 		if event.UpdatedAt.Unix() > lastModified.Unix() {
 			lastModified = event.UpdatedAt
 		}
 
-		protocolEvents[index] = transcoders.EventToResponse(&event)
+		representedEvents[index] = transcoders.EventToResponse(&event)
 	}
 
 	renderer.Header().Add("Last-Modified", lastModified.UTC().Format(time.RFC1123))
-	renderer.JSON(http.StatusOK, protocolEvents)
+	renderer.JSON(http.StatusOK, representedEvents)
 }
 
 func event(
@@ -99,7 +99,7 @@ func event(
 
 func updateEvent(
 	database *gorm.DB,
-	eventRequest protocol.EventRequest,
+	eventRequest representers.EventRequest,
 	logger *middleware.ApplicationLogger,
 	params martini.Params,
 	renderer render.Render,
