@@ -18,10 +18,12 @@ import (
 func init() {
 	routes.Register(func(r martini.Router) {
 		r.Get("/events", events)
-		r.Post("/events", binding.Bind(representers.EventRequest{}), createEvent)
+		r.Post("/events", middleware.AuthorizeAdministrator(),
+			binding.Bind(representers.EventRequest{}), createEvent)
 
 		r.Get("/events/:id", event)
-		r.Put("/events/:id", binding.Bind(representers.EventRequest{}), updateEvent)
+		r.Put("/events/:id", middleware.AuthorizeAdministrator(),
+			binding.Bind(representers.EventRequest{}), updateEvent)
 		r.Delete("/events/:id", deleteEvent)
 	})
 }

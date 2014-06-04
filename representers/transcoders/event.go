@@ -21,6 +21,7 @@ func EventFromRequest(from *representers.EventRequest, to *models.Event) {
 
 func EventToResponse(from *models.Event) representers.EventResponse {
 	return representers.EventResponse{
+		Id:                    from.Id,
 		Name:                  from.Name,
 		Place:                 from.Place,
 		Description:           from.Description,

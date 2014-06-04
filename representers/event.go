@@ -14,6 +14,7 @@ var (
 )
 
 type EventResponse struct {
+	Id                    int       `json:"id"`
 	Name                  string    `json:"name"`
 	Place                 string    `json:"place"`
 	Description           string    `json:"description"`
