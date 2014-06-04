@@ -9,6 +9,24 @@ import (
 	"time"
 )
 
+var (
+	day, _ = time.ParseDuration("24h")
+)
+
+type EventResponse struct {
+	Name                  string    `json:"name"`
+	Place                 string    `json:"place"`
+	Description           string    `json:"description"`
+	URL                   string    `json:"URL"`
+	LogoURL               string    `json:"logoURL"`
+	Beginning             time.Time `json:"beginning"`
+	End                   time.Time `json:"end"`
+	RegistrationBeginning time.Time `json:"registrationBeginning"`
+	RegistrationEnd       time.Time `json:"registrationEnd"`
+	Visibility            string    `json:"visibility"`
+	Status                string    `json:"status"`
+}
+
 type EventRequest struct {
 	Name                  string    `json:"name" binding:"required"`
 	Place                 string    `json:"place" binding:"required"`
@@ -32,7 +50,6 @@ func (event *EventRequest) Validate(errors binding.Errors, request *http.Request
 }
 
 func (event *EventRequest) validateDates(errors *binding.Errors) {
-	day, _ := time.ParseDuration("24h")
 	limit := time.Now().Add(-day).Unix()
 
 	if event.RegistrationBeginning.Unix() < limit ||

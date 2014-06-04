@@ -33,7 +33,7 @@ func createEvent(
 	renderer render.Render,
 ) {
 	event := models.Event{}
-	transcoders.EventRequestToEvent(&eventRequest, &event)
+	transcoders.EventFromRequest(&eventRequest, &event)
 
 	if query := database.Save(&event); query.Error != nil {
 		logger.Log(query.Error.Error())
@@ -59,14 +59,18 @@ func events(
 		return
 	}
 
-	for _, event := range events {
+	protocolEvents := make([]protocol.EventResponse, len(events))
+
+	for index, event := range events {
 		if event.UpdatedAt.Unix() > lastModified.Unix() {
 			lastModified = event.UpdatedAt
 		}
+
+		protocolEvents[index] = transcoders.EventToResponse(&event)
 	}
 
 	renderer.Header().Add("Last-Modified", lastModified.UTC().Format(time.RFC1123))
-	renderer.JSON(http.StatusOK, events)
+	renderer.JSON(http.StatusOK, protocolEvents)
 }
 
 func event(
@@ -90,7 +94,7 @@ func event(
 	}
 
 	renderer.Header().Add("Last-Modified", event.CreatedAt.UTC().Format(time.RFC1123))
-	renderer.JSON(http.StatusOK, event)
+	renderer.JSON(http.StatusOK, transcoders.EventToResponse(&event))
 }
 
 func updateEvent(
@@ -113,7 +117,7 @@ func updateEvent(
 		return
 	}
 
-	transcoders.EventRequestToEvent(&eventRequest, &event)
+	transcoders.EventFromRequest(&eventRequest, &event)
 
 	if query := database.Save(event); query.Error != nil {
 		logger.Log(query.Error.Error())

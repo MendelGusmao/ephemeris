@@ -13,20 +13,20 @@ const (
 )
 
 type Event struct {
-	Id                    int       `json:"id"`
-	Name                  string    `json:"name"`
-	Place                 string    `json:"place"`
-	Description           string    `json:"description"`
-	URL                   string    `json:"URL"`
-	LogoURL               string    `json:"logoURL"`
-	Beginning             time.Time `json:"beginning"`
-	End                   time.Time `json:"end"`
-	RegistrationBeginning time.Time `json:"registrationBeginning"`
-	RegistrationEnd       time.Time `json:"registrationEnd"`
-	Visibility            string    `json:"visibility"`
-	Status                string    `json:"status"`
-	CreatedAt             time.Time `json:"createdAt"`
-	UpdatedAt             time.Time `json:"updatedAt"`
+	Id                    int
+	Name                  string
+	Place                 string
+	Description           string
+	URL                   string
+	LogoURL               string
+	Beginning             time.Time
+	End                   time.Time
+	RegistrationBeginning time.Time
+	RegistrationEnd       time.Time
+	Visibility            string
+	Status                string
+	CreatedAt             time.Time
+	UpdatedAt             time.Time
 }
 
 func init() {
