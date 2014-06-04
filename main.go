@@ -31,6 +31,10 @@ func main() {
 	m.Use(middleware.Database(databaseOptions))
 	m.Use(middleware.Logger())
 
+	if os.Getenv("DEV_RUNNER") == "1" {
+		m.Use(middleware.Fresh)
+	}
+
 	m.Group(config.Ephemeris.APIRoot, func(r martini.Router) {
 		routes.Apply(r)
 	})
