@@ -33,5 +33,6 @@ func EventToResponse(from *models.Event) representers.EventResponse {
 		Status:                from.Status,
 		RegistrationBeginning: from.RegistrationBeginning,
 		RegistrationEnd:       from.RegistrationEnd,
+		User:                  UserToResponsePrivate(&from.User),
 	}
 }

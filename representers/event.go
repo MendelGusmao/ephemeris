@@ -14,18 +14,19 @@ var (
 )
 
 type EventResponse struct {
-	Id                    int       `json:"id"`
-	Name                  string    `json:"name"`
-	Place                 string    `json:"place"`
-	Description           string    `json:"description"`
-	URL                   string    `json:"URL"`
-	LogoURL               string    `json:"logoURL"`
-	Beginning             time.Time `json:"beginning"`
-	End                   time.Time `json:"end"`
-	RegistrationBeginning time.Time `json:"registrationBeginning"`
-	RegistrationEnd       time.Time `json:"registrationEnd"`
-	Visibility            string    `json:"visibility"`
-	Status                string    `json:"status"`
+	Id                    int          `json:"id"`
+	Name                  string       `json:"name"`
+	Place                 string       `json:"place"`
+	Description           string       `json:"description"`
+	URL                   string       `json:"URL"`
+	LogoURL               string       `json:"logoURL"`
+	Beginning             time.Time    `json:"beginning"`
+	End                   time.Time    `json:"end"`
+	RegistrationBeginning time.Time    `json:"registrationBeginning"`
+	RegistrationEnd       time.Time    `json:"registrationEnd"`
+	Visibility            string       `json:"visibility"`
+	Status                string       `json:"status"`
+	User                  UserResponse `json:"user"`
 }
 
 type EventRequest struct {

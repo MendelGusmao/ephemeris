@@ -1,30 +1,55 @@
 package middleware
 
 import (
+	"ephemeris/models"
 	"github.com/go-martini/martini"
+	"github.com/jinzhu/gorm"
 	"github.com/martini-contrib/render"
 	"github.com/martini-contrib/sessions"
 	"net/http"
 )
 
 func Authorize() martini.Handler {
-	return func(logger *ApplicationLogger, renderer render.Render, session sessions.Session) {
-		if session.Get("user.id") == nil {
+	return func(
+		context martini.Context,
+		database *gorm.DB,
+		logger *ApplicationLogger,
+		renderer render.Render,
+		session sessions.Session,
+	) {
+		id := session.Get("user.id")
+
+		if id == nil {
 			logger.Log("Not allowed")
 			renderer.Status(http.StatusForbidden)
 			return
 		}
+
+		user, err := loadUser(database, id)
+
+		if err != nil {
+			if err == gorm.RecordNotFound {
+				renderer.Status(http.StatusForbidden)
+				return
+			}
+
+			logger.Log(err.Error())
+			renderer.Status(http.StatusInternalServerError)
+			return
+		}
+
+		logger.Logf("Loading user '%s'", user.Username)
+		context.Map(user)
 	}
 }
 
-func AuthorizeAdministrator() martini.Handler {
-	return func(logger *ApplicationLogger, renderer render.Render, session sessions.Session) {
-		administrator := session.Get("user.administrator")
+func loadUser(database *gorm.DB, id interface{}) (*models.User, error) {
+	user := &models.User{}
+	query := database.Where("id = ?", id).Find(user)
 
-		if session.Get("user.id") == nil || (administrator != nil && !administrator.(bool)) {
-			logger.Log("Not allowed")
-			renderer.Status(http.StatusForbidden)
-			return
-		}
+	if query.Error != nil {
+		return nil, query.Error
 	}
+
+	return user, nil
 }

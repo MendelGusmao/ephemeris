@@ -25,7 +25,6 @@ func UserToResponse(from *models.User) representers.UserResponse {
 
 func UserToResponsePrivate(from *models.User) representers.UserResponse {
 	return representers.UserResponse{
-		Id:       from.Id,
 		Username: from.Username,
 	}
 }

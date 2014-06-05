@@ -18,11 +18,11 @@ import (
 func init() {
 	routes.Register(func(r martini.Router) {
 		r.Get("/events", events)
-		r.Post("/events", middleware.AuthorizeAdministrator(),
+		r.Post("/events", middleware.Authorize(),
 			binding.Bind(representers.EventRequest{}), createEvent)
 
 		r.Get("/events/:id", event)
-		r.Put("/events/:id", middleware.AuthorizeAdministrator(),
+		r.Put("/events/:id", middleware.Authorize(),
 			binding.Bind(representers.EventRequest{}), updateEvent)
 		r.Delete("/events/:id", deleteEvent)
 	})
@@ -33,8 +33,9 @@ func createEvent(
 	eventRequest representers.EventRequest,
 	logger *middleware.ApplicationLogger,
 	renderer render.Render,
+	user *models.User,
 ) {
-	event := models.Event{}
+	event := models.Event{User: *user}
 	transcoders.EventFromRequest(&eventRequest, &event)
 
 	if query := database.Save(&event); query.Error != nil {

@@ -25,6 +25,8 @@ type Event struct {
 	RegistrationEnd       time.Time
 	Visibility            string
 	Status                string
+	User                  User
+	UserId                int
 	CreatedAt             time.Time
 	UpdatedAt             time.Time
 }

@@ -18,7 +18,7 @@ func init() {
 	routes.Register(func(r martini.Router) {
 		r.Get("/session", session)
 		r.Post("/session", binding.Bind(representers.UserRequest{}), newSession)
-		r.Delete("/session", destroySession)
+		r.Delete("/session", middleware.Authorize(), destroySession)
 	})
 }
 
@@ -27,11 +27,11 @@ func session(
 	session sessions.Session,
 ) {
 	if session.Get("user.id") != nil {
-		renderer.Status(http.StatusOK)
+		renderer.Status(http.StatusNoContent)
 		return
 	}
 
-	renderer.Status(http.StatusUnauthorized)
+	renderer.Status(http.StatusForbidden)
 }
 
 func newSession(
@@ -42,7 +42,7 @@ func newSession(
 	userRequest representers.UserRequest,
 ) {
 	if session.Get("user.id") != nil {
-		renderer.Status(http.StatusOK)
+		renderer.Status(http.StatusNoContent)
 		return
 	}
 
@@ -70,8 +70,6 @@ func newSession(
 
 	logger.Logf("'%s' has successfully logged in", user.Username)
 	session.Set("user.id", user.Id)
-	session.Set("user.name", user.Username)
-	session.Set("user.administrator", user.Administrator)
 	renderer.Status(http.StatusCreated)
 }
 
@@ -79,13 +77,9 @@ func destroySession(
 	logger *middleware.ApplicationLogger,
 	renderer render.Render,
 	session sessions.Session,
+	user *models.User,
 ) {
-	if session.Get("user.id") == nil {
-		renderer.Status(http.StatusNotFound)
-		return
-	}
-
-	logger.Logf("'%s' has successfully logged out", session.Get("user.name"))
+	logger.Logf("'%s' has successfully logged out", user.Username)
 	session.Clear()
-	renderer.Status(http.StatusOK)
+	renderer.Status(http.StatusNoContent)
 }
