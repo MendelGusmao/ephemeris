@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/go-martini/martini"
 	"log"
 	"net/http"
@@ -28,6 +29,10 @@ func (logger *ApplicationLogger) Log(message string) {
 
 	now := time.Now().Format(layout)
 	logger.Logger.Printf("%s %s for %s @ %s -> %s", logger.request.Method, logger.request.URL.Path, addr, now, message)
+}
+
+func (logger *ApplicationLogger) Logf(format string, parts ...interface{}) {
+	logger.Log(fmt.Sprintf(format, parts...))
 }
 
 func Logger() martini.Handler {

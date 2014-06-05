@@ -150,7 +150,7 @@ func deleteEvent(
 		return
 	}
 
-	if query := database.Where("id = ?", params["id"]).Delete(&event); query.Error != nil {
+	if query := database.Delete(&event); query.Error != nil {
 		logger.Log(query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return

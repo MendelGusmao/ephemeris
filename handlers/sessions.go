@@ -6,7 +6,6 @@ import (
 	"ephemeris/representers"
 	"ephemeris/representers/transcoders"
 	"ephemeris/routes"
-	"fmt"
 	"github.com/go-martini/martini"
 	"github.com/jinzhu/gorm"
 	"github.com/martini-contrib/binding"
@@ -32,7 +31,7 @@ func session(
 		return
 	}
 
-	renderer.Status(http.StatusNotFound)
+	renderer.Status(http.StatusUnauthorized)
 }
 
 func newSession(
@@ -59,7 +58,7 @@ func newSession(
 
 	if query.Error != nil {
 		if query.Error == gorm.RecordNotFound {
-			logger.Log(fmt.Sprintf("Unsuccessful login from '%s'", user.Username))
+			logger.Logf("Unsuccessful login from '%s'", user.Username)
 			renderer.Status(http.StatusNotFound)
 			return
 		}
@@ -69,7 +68,7 @@ func newSession(
 		return
 	}
 
-	logger.Log(fmt.Sprintf("'%s' has successfully logged in", user.Username))
+	logger.Logf("'%s' has successfully logged in", user.Username)
 	session.Set("user.id", user.Id)
 	session.Set("user.name", user.Username)
 	session.Set("user.administrator", user.Administrator)
@@ -86,7 +85,7 @@ func destroySession(
 		return
 	}
 
-	logger.Log(fmt.Sprintf("'%s' has successfully logged out", session.Get("user.name")))
+	logger.Logf("'%s' has successfully logged out", session.Get("user.name"))
 	session.Clear()
 	renderer.Status(http.StatusOK)
 }
