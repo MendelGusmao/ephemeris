@@ -1,8 +1,8 @@
 package transcoders
 
 import (
-	"ephemeris/models"
-	"ephemeris/representers"
+	"ephemeris/core/models"
+	"ephemeris/core/representers"
 )
 
 func EventFromRequest(from *representers.EventRequest, to *models.Event) {

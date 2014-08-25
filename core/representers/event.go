@@ -1,7 +1,7 @@
 package representers
 
 import (
-	"ephemeris/models"
+	"ephemeris/core/models"
 	"fmt"
 	"github.com/martini-contrib/binding"
 	"net/http"

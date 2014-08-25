@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"ephemeris/middleware"
-	"ephemeris/models"
-	"ephemeris/representers"
-	"ephemeris/representers/transcoders"
-	"ephemeris/routes"
+	"ephemeris/core/middleware"
+	"ephemeris/core/models"
+	"ephemeris/core/representers"
+	"ephemeris/core/representers/transcoders"
+	"ephemeris/core/routes"
 	"fmt"
 	"github.com/go-martini/martini"
 	"github.com/jinzhu/gorm"

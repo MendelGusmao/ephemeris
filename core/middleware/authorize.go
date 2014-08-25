@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"ephemeris/models"
+	"ephemeris/core/models"
 	"github.com/go-martini/martini"
 	"github.com/jinzhu/gorm"
 	"github.com/martini-contrib/render"
