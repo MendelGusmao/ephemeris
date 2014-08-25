@@ -1,11 +1,11 @@
 package main
 
 import (
-	"ephemeris/config"
-	_ "ephemeris/handlers"
-	"ephemeris/middleware"
-	"ephemeris/models"
-	"ephemeris/routes"
+	"ephemeris/core/config"
+	_ "ephemeris/core/handlers"
+	"ephemeris/core/middleware"
+	"ephemeris/core/models"
+	"ephemeris/core/routes"
 	"fmt"
 	"github.com/go-martini/martini"
 	"github.com/jinzhu/gorm"

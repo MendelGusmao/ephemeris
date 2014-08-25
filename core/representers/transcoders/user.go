@@ -1,8 +1,8 @@
 package transcoders
 
 import (
-	"ephemeris/models"
-	"ephemeris/representers"
+	"ephemeris/core/models"
+	"ephemeris/core/representers"
 )
 
 func UserFromRequest(from *representers.UserRequest, to *models.User) {
