@@ -57,6 +57,11 @@ func events(
 	lastModified := time.Time{}
 
 	if query := database.Find(&events); query.Error != nil {
+		if query.Error == gorm.RecordNotFound {
+			renderer.Status(http.StatusNoContent)
+			return
+		}
+
 		logger.Log(query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
@@ -67,6 +72,14 @@ func events(
 	for index, event := range events {
 		if event.UpdatedAt.Unix() > lastModified.Unix() {
 			lastModified = event.UpdatedAt
+		}
+
+		query := database.Model(event).Related(&event.User)
+
+		if query.Error != nil {
+			logger.Log(query.Error.Error())
+			renderer.Status(http.StatusInternalServerError)
+			return
 		}
 
 		representedEvents[index] = transcoders.EventToResponse(&event)
@@ -91,6 +104,14 @@ func event(
 			return
 		}
 
+		logger.Log(query.Error.Error())
+		renderer.Status(http.StatusInternalServerError)
+		return
+	}
+
+	query = database.Model(event).Related(&event.User)
+
+	if query.Error != nil {
 		logger.Log(query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
