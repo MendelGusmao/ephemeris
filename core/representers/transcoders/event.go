@@ -34,5 +34,7 @@ func EventToResponse(from *models.Event) representers.EventResponse {
 		RegistrationBeginning: from.RegistrationBeginning,
 		RegistrationEnd:       from.RegistrationEnd,
 		User:                  UserToResponsePrivate(&from.User),
+		CreatedAt:             from.CreatedAt,
+		UpdatedAt:             from.UpdatedAt,
 	}
 }
