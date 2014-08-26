@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"ephemeris/core/middleware"
 	"ephemeris/core/models"
 	"ephemeris/core/representers"
@@ -57,7 +58,8 @@ func events(
 	lastModified := time.Time{}
 
 	if query := database.Find(&events); query.Error != nil {
-		if query.Error == gorm.RecordNotFound {
+		// TODO gorm doesn't return gorm.RecordNotFound when using testdb as driver
+		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			renderer.Status(http.StatusNoContent)
 			return
 		}

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"ephemeris/core/middleware"
 	"ephemeris/core/models"
 	"ephemeris/core/representers"
@@ -26,12 +27,13 @@ func session(
 	renderer render.Render,
 	session sessions.Session,
 ) {
-	if session.Get("user.id") != nil {
-		renderer.Status(http.StatusNoContent)
+	if session.Get("user.id") == nil {
+		renderer.Status(http.StatusForbidden)
 		return
 	}
 
-	renderer.Status(http.StatusForbidden)
+	renderer.Status(http.StatusNoContent)
+
 }
 
 func newSession(
@@ -57,7 +59,7 @@ func newSession(
 	).First(&user)
 
 	if query.Error != nil {
-		if query.Error == gorm.RecordNotFound {
+		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			logger.Logf("Unsuccessful login from '%s'", user.Username)
 			renderer.Status(http.StatusNotFound)
 			return

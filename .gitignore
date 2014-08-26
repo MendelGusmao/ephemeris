@@ -1,3 +1,4 @@
 webroot/assets/lib
 .bower-cache
 .bower-registry
+**/*.coverprofile

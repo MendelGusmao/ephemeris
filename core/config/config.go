@@ -24,13 +24,13 @@ type SessionConfig struct {
 	Name   string
 }
 
-func Load(filename string) error {
+func Load(filename string, config interface{}) error {
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return err
 	}
 
-	err = json.Unmarshal(content, &Ephemeris)
+	err = json.Unmarshal(content, config)
 	if err != nil {
 		return err
 	}
