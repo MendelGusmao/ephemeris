@@ -19,27 +19,30 @@ func main() {
 	buildDatabase()
 
 	m := martini.Classic()
+	configure(config.Ephemeris, m)
+	m.Run()
+}
 
-	store := sessions.NewCookieStore([]byte(config.Ephemeris.Session.Secret))
-	databaseOptions := middleware.DatabaseOptions{
-		URL:                config.Ephemeris.Database.URL,
-		MaxIdleConnections: config.Ephemeris.Database.MaxIdleConnections,
+func configure(ephemeris config.EphemerisConfig, m *martini.ClassicMartini) {
+	store := sessions.NewCookieStore([]byte(ephemeris.Session.Secret))
+	dbOptions := middleware.DBOptions{
+		Driver:             ephemeris.Database.Driver,
+		URL:                ephemeris.Database.URL,
+		MaxIdleConnections: ephemeris.Database.MaxIdleConnections,
 	}
 
-	m.Use(sessions.Sessions(config.Ephemeris.Session.Name, store))
+	m.Use(sessions.Sessions(ephemeris.Session.Name, store))
 	m.Use(render.Renderer())
-	m.Use(middleware.Database(databaseOptions))
+	m.Use(middleware.Database(dbOptions))
 	m.Use(middleware.Logger())
 
 	if os.Getenv("DEV_RUNNER") == "1" {
 		m.Use(middleware.Fresh)
 	}
 
-	m.Group(config.Ephemeris.APIRoot, func(r martini.Router) {
+	m.Group(ephemeris.APIRoot, func(r martini.Router) {
 		routes.Apply(r)
 	})
-
-	m.Run()
 }
 
 func readConfiguration() {

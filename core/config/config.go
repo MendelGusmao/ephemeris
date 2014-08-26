@@ -5,20 +5,21 @@ import (
 	"io/ioutil"
 )
 
-var Ephemeris ephemerisConfig
+var Ephemeris EphemerisConfig
 
-type ephemerisConfig struct {
+type EphemerisConfig struct {
 	APIRoot  string
-	Database databaseConfig
-	Session  sessionConfig
+	Database DatabaseConfig
+	Session  SessionConfig
 }
 
-type databaseConfig struct {
+type DatabaseConfig struct {
+	Driver             string
 	URL                string
 	MaxIdleConnections int
 }
 
-type sessionConfig struct {
+type SessionConfig struct {
 	Secret string
 	Name   string
 }
