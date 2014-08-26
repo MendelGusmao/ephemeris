@@ -6,6 +6,7 @@ deps:
 	go get github.com/martini-contrib/binding
 	go get github.com/lib/pq
 	go get github.com/pilu/fresh
+	go get github.com/ae0000/fresh
 	bower install
 
 test:
