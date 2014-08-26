@@ -76,7 +76,7 @@ func buildDatabase() {
 		panic(err)
 	}
 
-	for _, model := range models.Models {
-		db.AutoMigrate(model)
+	for _, err := range models.BuildDatabase(db) {
+		fmt.Println("Error building database:", err)
 	}
 }

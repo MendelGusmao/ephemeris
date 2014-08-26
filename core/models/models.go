@@ -1,11 +1,12 @@
 package models
 
 import (
+	"github.com/jinzhu/gorm"
 	"sync"
 )
 
 var (
-	Models       = make([]interface{}, 0)
+	models       = make([]interface{}, 0)
 	registerLock sync.RWMutex
 )
 
@@ -13,5 +14,19 @@ func register(model interface{}) {
 	registerLock.Lock()
 	defer registerLock.Unlock()
 
-	Models = append(Models, model)
+	models = append(models, model)
+}
+
+func BuildDatabase(db gorm.DB) []error {
+	errors := make([]error, 0)
+
+	for _, model := range models {
+		db.AutoMigrate(model)
+
+		if db.Error != nil {
+			errors = append(errors, db.Error)
+		}
+	}
+
+	return errors
 }
