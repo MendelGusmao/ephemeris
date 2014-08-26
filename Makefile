@@ -1,3 +1,6 @@
+run:
+	fresh
+
 deps:
 	go get github.com/jinzhu/gorm
 	go get github.com/go-martini/martini
@@ -11,6 +14,3 @@ deps:
 
 test:
 	@find . -name "*_test.go" | xargs dirname | xargs go test $(O)
-
-run:
-	fresh
