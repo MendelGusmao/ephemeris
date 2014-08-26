@@ -74,6 +74,14 @@ func events(
 			lastModified = event.UpdatedAt
 		}
 
+		query := database.Model(event).Related(&event.User)
+
+		if query.Error != nil {
+			logger.Log(query.Error.Error())
+			renderer.Status(http.StatusInternalServerError)
+			return
+		}
+
 		representedEvents[index] = transcoders.EventToResponse(&event)
 	}
 

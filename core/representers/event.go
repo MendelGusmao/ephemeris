@@ -27,6 +27,8 @@ type EventResponse struct {
 	Visibility            string       `json:"visibility"`
 	Status                string       `json:"status"`
 	User                  UserResponse `json:"user"`
+	CreatedAt             time.Time    `json:"createdAt"`
+	UpdatedAt             time.Time    `json:"updatedAt"`
 }
 
 type EventRequest struct {
