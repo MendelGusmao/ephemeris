@@ -11,6 +11,7 @@ import (
 
 var (
 	layout = "02/01/2006 15:04:05"
+	stdout = log.New(os.Stdout, "[ephemeris] ", 0)
 )
 
 type ApplicationLogger struct {
@@ -39,7 +40,7 @@ func Logger() martini.Handler {
 	return func(c martini.Context, req *http.Request) {
 		c.Map(&ApplicationLogger{
 			Request: req,
-			Logger:  log.New(os.Stdout, "[ephemeris] ", 0),
+			Logger:  stdout,
 		})
 
 		c.Next()
