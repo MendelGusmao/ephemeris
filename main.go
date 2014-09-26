@@ -40,7 +40,7 @@ func readConfiguration() {
 
 	fmt.Printf("Using %s as configuration file\n", configFilename)
 
-	if err := config.Load(configFilename); err != nil {
+	if err := config.Load(configFilename, &config.Ephemeris); err != nil {
 		fmt.Println("Error loading configuration:", err)
 		os.Exit(1)
 	}
