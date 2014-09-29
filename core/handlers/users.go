@@ -29,7 +29,7 @@ func init() {
 func createUser(
 	database *gorm.DB,
 	userRequest representers.UserRequest,
-	logger *middleware.ApplicationLogger,
+	logger *middleware.AppLogger,
 	renderer render.Render,
 ) {
 	user := models.User{}
@@ -47,7 +47,7 @@ func createUser(
 
 func users(
 	database *gorm.DB,
-	logger *middleware.ApplicationLogger,
+	logger *middleware.AppLogger,
 	renderer render.Render,
 ) {
 	users := make([]models.User, 0)
@@ -75,7 +75,7 @@ func users(
 
 func user(
 	database *gorm.DB,
-	logger *middleware.ApplicationLogger,
+	logger *middleware.AppLogger,
 	params martini.Params,
 	renderer render.Render,
 ) {
@@ -100,7 +100,7 @@ func user(
 func updateUser(
 	database *gorm.DB,
 	userRequest representers.UserRequest,
-	logger *middleware.ApplicationLogger,
+	logger *middleware.AppLogger,
 	params martini.Params,
 	renderer render.Render,
 ) {
@@ -131,7 +131,7 @@ func updateUser(
 
 func deleteUser(
 	database *gorm.DB,
-	logger *middleware.ApplicationLogger,
+	logger *middleware.AppLogger,
 	params martini.Params,
 	renderer render.Render,
 ) {

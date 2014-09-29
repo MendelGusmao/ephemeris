@@ -36,7 +36,7 @@ func session(
 
 func newSession(
 	database *gorm.DB,
-	logger *middleware.ApplicationLogger,
+	logger *middleware.AppLogger,
 	renderer render.Render,
 	session sessions.Session,
 	userRequest representers.UserRequest,
@@ -74,7 +74,7 @@ func newSession(
 }
 
 func destroySession(
-	logger *middleware.ApplicationLogger,
+	logger *middleware.AppLogger,
 	renderer render.Render,
 	session sessions.Session,
 	user *models.User,

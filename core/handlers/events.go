@@ -31,7 +31,7 @@ func init() {
 func createEvent(
 	database *gorm.DB,
 	eventRequest representers.EventRequest,
-	logger *middleware.ApplicationLogger,
+	logger *middleware.AppLogger,
 	renderer render.Render,
 	user *models.User,
 ) {
@@ -50,7 +50,7 @@ func createEvent(
 
 func events(
 	database *gorm.DB,
-	logger *middleware.ApplicationLogger,
+	logger *middleware.AppLogger,
 	renderer render.Render,
 ) {
 	events := make([]models.Event, 0)
@@ -91,7 +91,7 @@ func events(
 
 func event(
 	database *gorm.DB,
-	logger *middleware.ApplicationLogger,
+	logger *middleware.AppLogger,
 	params martini.Params,
 	renderer render.Render,
 ) {
@@ -124,7 +124,7 @@ func event(
 func updateEvent(
 	database *gorm.DB,
 	eventRequest representers.EventRequest,
-	logger *middleware.ApplicationLogger,
+	logger *middleware.AppLogger,
 	params martini.Params,
 	renderer render.Render,
 ) {
@@ -155,7 +155,7 @@ func updateEvent(
 
 func deleteEvent(
 	database *gorm.DB,
-	logger *middleware.ApplicationLogger,
+	logger *middleware.AppLogger,
 	params martini.Params,
 	renderer render.Render,
 ) {

@@ -13,7 +13,7 @@ func Authorize() martini.Handler {
 	return func(
 		context martini.Context,
 		database *gorm.DB,
-		logger *ApplicationLogger,
+		logger *AppLogger,
 		renderer render.Render,
 		session sessions.Session,
 	) {

@@ -14,12 +14,12 @@ var (
 	stdout = log.New(os.Stdout, "[ephemeris] ", 0)
 )
 
-type ApplicationLogger struct {
+type AppLogger struct {
 	*log.Logger
 	Request *http.Request
 }
 
-func (logger *ApplicationLogger) Log(message string) {
+func (logger *AppLogger) Log(message string) {
 	addr := logger.Request.Header.Get("X-Real-IP")
 	if addr == "" {
 		addr = logger.Request.Header.Get("X-Forwarded-For")
@@ -29,16 +29,16 @@ func (logger *ApplicationLogger) Log(message string) {
 	}
 
 	now := time.Now().Format(layout)
-	logger.Logger.Printf("%s %s for %s @ %s -> %s", logger.Request.Method, logger.Request.URL.Path, addr, now, message)
+	logger.Printf("%s %s for %s @ %s -> %s", logger.Request.Method, logger.Request.URL.Path, addr, now, message)
 }
 
-func (logger *ApplicationLogger) Logf(format string, parts ...interface{}) {
+func (logger *AppLogger) Logf(format string, parts ...interface{}) {
 	logger.Log(fmt.Sprintf(format, parts...))
 }
 
 func Logger() martini.Handler {
 	return func(c martini.Context, req *http.Request) {
-		c.Map(&ApplicationLogger{
+		c.Map(&AppLogger{
 			Request: req,
 			Logger:  stdout,
 		})
