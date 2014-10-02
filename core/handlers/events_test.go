@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"ephemeris/core/representers"
 	"ephemeris/testing/stubs"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/erikstmartin/go-testdb"
 	_ "github.com/erikstmartin/go-testdb"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"log"
-	"net/http"
-	"time"
 )
 
 var _ = Describe("/api/events", func() {

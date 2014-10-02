@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"ephemeris/testing/stubs"
+	"net/http"
+
 	"github.com/erikstmartin/go-testdb"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"net/http"
 )
 
 var _ = Describe("Session", func() {

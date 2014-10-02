@@ -6,9 +6,10 @@ import (
 	"ephemeris/core/models"
 	"ephemeris/core/server"
 	"fmt"
+	"os"
+
 	"github.com/go-martini/martini"
 	"github.com/jinzhu/gorm"
-	"os"
 )
 
 func main() {

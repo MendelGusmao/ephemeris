@@ -3,10 +3,11 @@ package representers
 import (
 	"ephemeris/core/models"
 	"fmt"
-	"github.com/martini-contrib/binding"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/martini-contrib/binding"
 )
 
 var (

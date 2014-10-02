@@ -7,14 +7,15 @@ import (
 	"ephemeris/core/representers"
 	"ephemeris/core/server"
 	"ephemeris/testing/fake"
-	"github.com/go-martini/martini"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 	"io"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/go-martini/martini"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var (

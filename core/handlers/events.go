@@ -8,12 +8,13 @@ import (
 	"ephemeris/core/representers/transcoders"
 	"ephemeris/core/routes"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/go-martini/martini"
 	"github.com/jinzhu/gorm"
 	"github.com/martini-contrib/binding"
 	"github.com/martini-contrib/render"
-	"net/http"
-	"time"
 )
 
 func init() {

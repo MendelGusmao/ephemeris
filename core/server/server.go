@@ -4,10 +4,11 @@ import (
 	"ephemeris/core/config"
 	"ephemeris/core/middleware"
 	"ephemeris/core/routes"
+	"os"
+
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
 	"github.com/martini-contrib/sessions"
-	"os"
 )
 
 func Configure(ephemeris config.EphemerisConfig, m *martini.ClassicMartini) {

@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"github.com/pilu/fresh/runner/runnerutils"
 	"net/http"
+
+	"github.com/pilu/fresh/runner/runnerutils"
 )
 
 func Fresh(w http.ResponseWriter, r *http.Request) {

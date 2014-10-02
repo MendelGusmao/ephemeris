@@ -2,11 +2,12 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/go-martini/martini"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/go-martini/martini"
 )
 
 var (

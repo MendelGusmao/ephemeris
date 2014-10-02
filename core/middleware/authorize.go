@@ -2,11 +2,12 @@ package middleware
 
 import (
 	"ephemeris/core/models"
+	"net/http"
+
 	"github.com/go-martini/martini"
 	"github.com/jinzhu/gorm"
 	"github.com/martini-contrib/render"
 	"github.com/martini-contrib/sessions"
-	"net/http"
 )
 
 func Authorize() martini.Handler {

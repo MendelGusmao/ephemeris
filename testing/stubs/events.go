@@ -3,8 +3,9 @@ package stubs
 import (
 	"database/sql"
 	"errors"
-	"github.com/erikstmartin/go-testdb"
 	"strings"
+
+	"github.com/erikstmartin/go-testdb"
 )
 
 var (
