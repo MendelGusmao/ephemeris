@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	day, _ = time.ParseDuration("24h")
+	day, _       = time.ParseDuration("24h")
+	validSchemes = []string{"http", "https", "ftp", "data"}
 )
 
 type EventResponse struct {
@@ -44,24 +45,28 @@ type EventRequest struct {
 	RegistrationEnd       time.Time `json:"registrationEnd" binding:"required"`
 	Visibility            string    `json:"visibility" binding:"required"`
 	Status                string    `json:"status" binding:"required"`
+
+	errors binding.Errors `json:"-"`
 }
 
 func (event *EventRequest) Validate(errors binding.Errors, request *http.Request) binding.Errors {
-	event.validateDates(&errors)
-	event.validateURLs(&errors)
-	event.validateEnums(&errors)
+	event.errors = errors
 
-	return errors
+	event.validateDates()
+	event.validateURLs()
+	event.validateEnums()
+
+	return event.errors
 }
 
-func (event *EventRequest) validateDates(errors *binding.Errors) {
+func (event *EventRequest) validateDates() {
 	limit := time.Now().Add(-day).Unix()
 
 	if event.RegistrationBeginning.Unix() < limit ||
 		event.RegistrationEnd.Unix() < limit ||
 		event.Beginning.Unix() < limit ||
 		event.End.Unix() < limit {
-		*errors = append(*errors, binding.Error{
+		event.errors = append(event.errors, binding.Error{
 			FieldNames:     []string{"registrationBeginning", "registrationEnd", "beginning", "end"},
 			Classification: "DateError",
 			Message:        "None of the dates can be in the past",
@@ -69,7 +74,7 @@ func (event *EventRequest) validateDates(errors *binding.Errors) {
 	}
 
 	if event.RegistrationBeginning.Unix() > event.RegistrationEnd.Unix() {
-		*errors = append(*errors, binding.Error{
+		event.errors = append(event.errors, binding.Error{
 			FieldNames:     []string{"registrationBeginning", "registrationEnd"},
 			Classification: "DateError",
 			Message:        "Registration beginning can't be after registration end",
@@ -77,7 +82,7 @@ func (event *EventRequest) validateDates(errors *binding.Errors) {
 	}
 
 	if event.Beginning.Unix() > event.End.Unix() {
-		*errors = append(*errors, binding.Error{
+		event.errors = append(event.errors, binding.Error{
 			FieldNames:     []string{"beginning", "end"},
 			Classification: "DateError",
 			Message:        "Event beginning can't be after event end",
@@ -85,7 +90,7 @@ func (event *EventRequest) validateDates(errors *binding.Errors) {
 	}
 
 	if event.RegistrationEnd.Unix() > event.End.Unix() {
-		*errors = append(*errors, binding.Error{
+		event.errors = append(event.errors, binding.Error{
 			FieldNames:     []string{"registrationEnd", "end"},
 			Classification: "DateError",
 			Message:        "Registration end can't be after event end",
@@ -93,7 +98,7 @@ func (event *EventRequest) validateDates(errors *binding.Errors) {
 	}
 
 	if event.RegistrationBeginning.Unix() > event.Beginning.Unix() {
-		*errors = append(*errors, binding.Error{
+		event.errors = append(event.errors, binding.Error{
 			FieldNames:     []string{"registrationBeginning", "beginning"},
 			Classification: "DateError",
 			Message:        "Registration beginning can't be after event beginning",
@@ -101,7 +106,7 @@ func (event *EventRequest) validateDates(errors *binding.Errors) {
 	}
 
 	if event.RegistrationBeginning.Unix() > event.End.Unix() {
-		*errors = append(*errors, binding.Error{
+		event.errors = append(event.errors, binding.Error{
 			FieldNames:     []string{"registrationBeginning", "end"},
 			Classification: "DateError",
 			Message:        "Registration beginning can't be after event end",
@@ -109,32 +114,45 @@ func (event *EventRequest) validateDates(errors *binding.Errors) {
 	}
 }
 
-func (event *EventRequest) validateURLs(errors *binding.Errors) {
-	_, err := url.Parse(event.URL)
+func (event *EventRequest) validateURLs() {
+	event.validateURL(event.URL, "URL")
+	event.validateURL(event.LogoURL, "LogoURL")
+}
+
+func (event *EventRequest) validateURL(value, field string) {
+	uri, err := url.Parse(value)
 
 	if err != nil {
-		*errors = append(*errors, binding.Error{
-			FieldNames:     []string{"url"},
+		event.errors = append(event.errors, binding.Error{
+			FieldNames:     []string{field},
 			Classification: "URLError",
 			Message:        "Invalid URL",
 		})
+
+		return
 	}
 
-	_, err = url.Parse(event.LogoURL)
+	ok := false
 
-	if err != nil {
-		*errors = append(*errors, binding.Error{
-			FieldNames:     []string{"logoURL"},
+	for _, scheme := range validSchemes {
+		if scheme == uri.Scheme {
+			ok = true
+		}
+	}
+
+	if !ok {
+		event.errors = append(event.errors, binding.Error{
+			FieldNames:     []string{field},
 			Classification: "URLError",
-			Message:        "Invalid URL",
+			Message:        "Invalid URL Scheme",
 		})
 	}
 }
 
-func (event *EventRequest) validateEnums(errors *binding.Errors) {
+func (event *EventRequest) validateEnums() {
 	if event.Visibility != models.EventVisibilityPrivate &&
 		event.Visibility != models.EventVisibilityPublic {
-		*errors = append(*errors, binding.Error{
+		event.errors = append(event.errors, binding.Error{
 			FieldNames:     []string{"visibility"},
 			Classification: "EnumError",
 			Message:        fmt.Sprintf("Invalid visibility '%s'", event.Visibility),
@@ -144,7 +162,7 @@ func (event *EventRequest) validateEnums(errors *binding.Errors) {
 	if event.Status != models.EventStatusCancelled &&
 		event.Status != models.EventStatusOpen &&
 		event.Status != models.EventStatusOnHold {
-		*errors = append(*errors, binding.Error{
+		event.errors = append(event.errors, binding.Error{
 			FieldNames:     []string{"status"},
 			Classification: "EnumError",
 			Message:        fmt.Sprintf("Invalid status '%s'", event.Status),
