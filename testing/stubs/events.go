@@ -10,7 +10,11 @@ import (
 
 var (
 	sqlSelectAllEvents = "SELECT * FROM `events`"
+	sqlSelectEvent     = "SELECT  * FROM `events`  WHERE id = ? ORDER BY `events`.id ASC LIMIT 1"
+	sqlSelectEventAlt  = "SELECT  * FROM `events`  WHERE id = ? LIMIT 1"
 	sqlInsertEvent     = "INSERT INTO `events` (`beginning`,`created_at`,`description`,`end`,`logo_u_r_l`,`name`,`place`,`registration_beginning`,`registration_end`,`status`,`u_r_l`,`updated_at`,`user_id`,`visibility`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+	sqlUpdateEvent     = "UPDATE `events` SET `beginning` = ?, `created_at` = ?, `description` = ?, `end` = ?, `logo_u_r_l` = ?, `name` = ?, `place` = ?, `registration_beginning` = ?, `registration_end` = ?, `status` = ?, `u_r_l` = ?, `updated_at` = ?, `user_id` = ?, `visibility` = ?  WHERE (`id` = ?)"
+	sqlDeleteEvent     = "DELETE FROM `events`  WHERE (`id` = ?)"
 
 	eventFields = []string{
 		"id",
@@ -48,23 +52,56 @@ var (
 	}
 )
 
-func SelectAllEvents(hasEvents bool) {
-	if hasEvents {
+func SelectAllEvents(result Result) {
+	switch result {
+	case ResultSuccess:
 		testdb.StubQuery(sqlSelectAllEvents, testdb.RowsFromCSVString(eventFields, strings.Join(eventData, ",")))
+	case ResultNoRows:
+		testdb.StubQueryError(sqlSelectAllEvents, sql.ErrNoRows)
+	case ResultError:
+		testdb.StubQueryError(sqlSelectAllEvents, errors.New("Forged error: SelectAllEvents."))
+	}
+}
+
+func SelectEvent(result Result) {
+	switch result {
+	case ResultSuccess:
+		rows := testdb.RowsFromCSVString(eventFields, strings.Join(eventData, ","))
+		testdb.StubQuery(sqlSelectEvent, rows)
+		testdb.StubQuery(sqlSelectEventAlt, rows)
+	case ResultNoRows:
+		testdb.StubQueryError(sqlSelectEvent, sql.ErrNoRows)
+		testdb.StubQueryError(sqlSelectEventAlt, sql.ErrNoRows)
+	case ResultError:
+		err := errors.New("Forged error: SelectEvent.")
+		testdb.StubQueryError(sqlSelectEvent, err)
+		testdb.StubQueryError(sqlSelectEventAlt, err)
+	}
+}
+
+func InsertEvent(result Result) {
+	if result == ResultSuccess {
+		testdb.StubExec(sqlInsertEvent, testdb.NewResult(1, nil, 1, nil))
 		return
 	}
 
-	testdb.StubQueryError(sqlSelectAllEvents, sql.ErrNoRows)
+	testdb.StubQueryError(sqlInsertEvent, errors.New("Forged error: InsertEvent."))
 }
 
-func SelectAllEventsWithError() {
-	testdb.StubQueryError(sqlSelectAllEvents, errors.New("Forged error: SelectAllEventsWithError."))
+func UpdateEvent(result Result) {
+	if result == ResultSuccess {
+		testdb.StubExec(sqlUpdateEvent, testdb.NewResult(1, nil, 1, nil))
+		return
+	}
+
+	testdb.StubQueryError(sqlUpdateEvent, errors.New("Forged error: UpdateEvent."))
 }
 
-func InsertEvent() {
-	testdb.StubExec(sqlInsertEvent, testdb.NewResult(1, nil, 1, nil))
-}
+func DeleteEvent(result Result) {
+	if result == ResultSuccess {
+		testdb.StubExec(sqlDeleteEvent, testdb.NewResult(1, nil, 1, nil))
+		return
+	}
 
-func InsertEventWithError() {
-	testdb.StubQueryError(sqlInsertEvent, errors.New("Forged error: InsertEventWithError."))
+	testdb.StubQueryError(sqlDeleteEvent, errors.New("Forged error: DeleteEvent."))
 }

@@ -14,7 +14,7 @@ import (
 	"github.com/rafaeljusto/go-testdb"
 )
 
-var _ = Describe("/api/events", func() {
+var _ = Describe("Events", func() {
 	var (
 		day, _ = time.ParseDuration("24h")
 	)
@@ -42,49 +42,42 @@ var _ = Describe("/api/events", func() {
 		testdb.Reset()
 	})
 
-	Context("GET", func() {
+	Context("Getting events", func() {
 		BeforeEach(func() {
 			stubs.SelectUser()
 		})
 
 		It("returns HTTP OK", func() {
-			stubs.SelectAllEvents(true)
+			stubs.SelectAllEvents(stubs.ResultSuccess)
 
 			Request("GET", "/api/events", false)
 			Expect(response.Code).To(Equal(http.StatusOK))
 		})
 
 		It("returns HTTP No Content", func() {
-			stubs.SelectAllEvents(false)
+			stubs.SelectAllEvents(stubs.ResultNoRows)
 
 			Request("GET", "/api/events", false)
 			Expect(response.Code).To(Equal(http.StatusNoContent))
 		})
 
 		It("returns HTTP Internal Server Error", func() {
-			stubs.SelectAllEventsWithError()
+			stubs.SelectAllEvents(stubs.ResultError)
 
 			Request("GET", "/api/events", false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})
 
-	Context("POST", func() {
+	Context("Creating events", func() {
 		BeforeEach(func() {
 			stubs.UpdateUser()
 			stubs.SelectUser()
 			stubs.SelectUserWithPassword()
 		})
 
-		It("returns a HTTP Forbidden", func() {
-			testdb.Reset()
-
-			PostRequest("POST", "/api/events", bytes.NewReader(body), false)
-			Expect(response.Code).To(Equal(http.StatusForbidden))
-		})
-
 		It("returns a HTTP Created", func() {
-			stubs.InsertEvent()
+			stubs.InsertEvent(stubs.ResultSuccess)
 
 			Login(false)
 			PostRequest("POST", "/api/events", bytes.NewReader(body), true)
@@ -92,10 +85,119 @@ var _ = Describe("/api/events", func() {
 		})
 
 		It("returns a HTTP Internal Server Error", func() {
-			stubs.InsertEventWithError()
+			stubs.InsertEvent(stubs.ResultError)
 
 			Login(false)
 			PostRequest("POST", "/api/events", bytes.NewReader(body), true)
+			Expect(response.Code).To(Equal(http.StatusInternalServerError))
+		})
+	})
+
+	Context("Getting an event", func() {
+		BeforeEach(func() {
+			stubs.SelectUser()
+		})
+
+		It("returns HTTP OK", func() {
+			stubs.SelectEvent(stubs.ResultSuccess)
+
+			Request("GET", "/api/events/1", false)
+			Expect(response.Code).To(Equal(http.StatusOK))
+		})
+
+		It("returns HTTP Not Found", func() {
+			stubs.SelectEvent(stubs.ResultNoRows)
+
+			Request("GET", "/api/events/1", false)
+			Expect(response.Code).To(Equal(http.StatusNotFound))
+		})
+
+		It("returns a HTTP Internal Server Error", func() {
+			stubs.SelectEvent(stubs.ResultError)
+
+			PostRequest("GET", "/api/events/1", bytes.NewReader(body), true)
+			Expect(response.Code).To(Equal(http.StatusInternalServerError))
+		})
+	})
+
+	Context("Updating an event", func() {
+		BeforeEach(func() {
+			stubs.SelectUser()
+			stubs.SelectUserWithPassword()
+		})
+
+		It("returns HTTP OK", func() {
+			stubs.SelectEvent(stubs.ResultSuccess)
+			stubs.UpdateEvent(stubs.ResultSuccess)
+
+			Login(false)
+			PostRequest("PUT", "/api/events/1", bytes.NewReader(body), true)
+			Expect(response.Code).To(Equal(http.StatusOK))
+		})
+
+		It("returns HTTP Not Found", func() {
+			stubs.SelectEvent(stubs.ResultNoRows)
+
+			Login(false)
+			PostRequest("PUT", "/api/events/1", bytes.NewReader(body), true)
+			Expect(response.Code).To(Equal(http.StatusNotFound))
+		})
+
+		It("returns HTTP Internal Server Error (checking if object exists)", func() {
+			stubs.SelectEvent(stubs.ResultError)
+
+			Login(false)
+			PostRequest("PUT", "/api/events/1", bytes.NewReader(body), true)
+			Expect(response.Code).To(Equal(http.StatusInternalServerError))
+		})
+
+		It("returns HTTP Internal Server Error (updating object)", func() {
+			stubs.SelectEvent(stubs.ResultSuccess)
+			stubs.UpdateEvent(stubs.ResultError)
+
+			Login(false)
+			PostRequest("PUT", "/api/events/1", bytes.NewReader(body), true)
+			Expect(response.Code).To(Equal(http.StatusInternalServerError))
+		})
+	})
+
+	Context("Deleting an event", func() {
+		BeforeEach(func() {
+			stubs.SelectUser()
+			stubs.SelectUserWithPassword()
+		})
+
+		It("returns HTTP No Content", func() {
+			stubs.SelectEvent(stubs.ResultSuccess)
+			stubs.DeleteEvent(stubs.ResultSuccess)
+
+			Login(false)
+			Request("DELETE", "/api/events/1", true)
+			Expect(response.Code).To(Equal(http.StatusNoContent))
+		})
+
+		It("returns HTTP Not Found", func() {
+			stubs.SelectEvent(stubs.ResultNoRows)
+
+			Login(false)
+			Request("DELETE", "/api/events/1", true)
+			Expect(response.Code).To(Equal(http.StatusNotFound))
+		})
+
+		It("returns HTTP Internal Server Error (checking if object exists)", func() {
+			stubs.SelectEvent(stubs.ResultError)
+
+			Login(false)
+			Request("DELETE", "/api/events/1", true)
+			Expect(response.Code).To(Equal(http.StatusInternalServerError))
+		})
+
+		It("returns HTTP Internal Server Error (deleting object)", func() {
+			stubs.SelectEvent(stubs.ResultSuccess)
+			stubs.DeleteEvent(stubs.ResultError)
+
+			Login(false)
+			Request("DELETE", "/api/events/1", true)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})

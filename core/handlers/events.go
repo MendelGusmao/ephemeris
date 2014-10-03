@@ -102,7 +102,8 @@ func event(
 	query := database.Where("id = ?", params["id"]).First(&event)
 
 	if query.Error != nil {
-		if query.Error == gorm.RecordNotFound {
+		// TODO gorm doesn't return gorm.RecordNotFound when using testdb as driver
+		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			renderer.Status(http.StatusNotFound)
 			return
 		}
@@ -134,7 +135,7 @@ func updateEvent(
 	event := models.Event{}
 
 	if query := database.Where("id = ?", params["id"]).Find(&event); query.Error != nil {
-		if query.Error == gorm.RecordNotFound {
+		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			renderer.Status(http.StatusNotFound)
 			return
 		}
@@ -165,7 +166,7 @@ func deleteEvent(
 	event := models.Event{}
 
 	if query := database.Where("id = ?", params["id"]).Find(&event); query.Error != nil {
-		if query.Error == gorm.RecordNotFound {
+		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			renderer.Status(http.StatusNotFound)
 			return
 		}
@@ -181,5 +182,5 @@ func deleteEvent(
 		return
 	}
 
-	renderer.Status(http.StatusOK)
+	renderer.Status(http.StatusNoContent)
 }
