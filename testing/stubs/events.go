@@ -58,7 +58,7 @@ func SelectAllEvents(hasEvents bool) {
 }
 
 func SelectAllEventsWithError() {
-	testdb.StubQueryError(sqlInsertEvent, errors.New("Forged error: SelectAllEventsWithError."))
+	testdb.StubQueryError(sqlSelectAllEvents, errors.New("Forged error: SelectAllEventsWithError."))
 }
 
 func InsertEvent() {
