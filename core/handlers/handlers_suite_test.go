@@ -16,6 +16,7 @@ import (
 	"github.com/go-martini/martini"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/rafaeljusto/go-testdb"
 )
 
 var (
@@ -28,11 +29,13 @@ var (
 	m      *martini.ClassicMartini
 	cookie string
 
-	sessionURI = "/api/session"
+	sessionURI         = "/api/session"
+	postgresDateFormat = "2006-01-02 15:04:05.000000-07"
 )
 
 func TestMain(t *testing.T) {
 	m = Setup()
+	testdb.EnableTimeParsingWithFormat(postgresDateFormat)
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Main Suite")
 }

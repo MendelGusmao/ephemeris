@@ -10,7 +10,7 @@ deps:
 	go get -u github.com/lib/pq
 	go get -u github.com/pilu/fresh
 	go get -u github.com/ae0000/fresh
-	go get -u github.com/erikstmartin/go-testdb
+	go get -u github.com/rafaeljusto/go-testdb
 	go get -u github.com/onsi/ginkgo
 	go get -u github.com/onsi/ginkgo/ginkgo
 	go get -u github.com/onsi/gomega

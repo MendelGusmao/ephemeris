@@ -5,7 +5,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/erikstmartin/go-testdb"
+	"github.com/rafaeljusto/go-testdb"
 )
 
 var (
