@@ -9,8 +9,8 @@ import (
 	"ephemeris/core/routes"
 	"net/http"
 
+	"github.com/MendelGusmao/gorm"
 	"github.com/go-martini/martini"
-	"github.com/jinzhu/gorm"
 	"github.com/martini-contrib/binding"
 	"github.com/martini-contrib/render"
 	"github.com/martini-contrib/sessions"

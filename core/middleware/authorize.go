@@ -4,8 +4,8 @@ import (
 	"ephemeris/core/models"
 	"net/http"
 
+	"github.com/MendelGusmao/gorm"
 	"github.com/go-martini/martini"
-	"github.com/jinzhu/gorm"
 	"github.com/martini-contrib/render"
 	"github.com/martini-contrib/sessions"
 )
@@ -46,7 +46,7 @@ func Authorize() martini.Handler {
 
 func loadUser(database *gorm.DB, id interface{}) (*models.User, error) {
 	user := &models.User{}
-	query := database.Where("id = ?", id).Find(user)
+	query := database.Where("(`id` = ?)", id).Find(user)
 
 	if query.Error != nil {
 		return nil, query.Error

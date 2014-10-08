@@ -11,8 +11,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/MendelGusmao/gorm"
 	"github.com/go-martini/martini"
-	"github.com/jinzhu/gorm"
 	"github.com/martini-contrib/binding"
 	"github.com/martini-contrib/render"
 )
@@ -99,7 +99,7 @@ func event(
 	renderer render.Render,
 ) {
 	event := models.Event{}
-	query := database.Where("id = ?", params["id"]).First(&event)
+	query := database.Where("(`id` = ?)", params["id"]).Find(&event)
 
 	if query.Error != nil {
 		// TODO gorm doesn't return gorm.RecordNotFound when using testdb as driver
@@ -134,7 +134,7 @@ func updateEvent(
 ) {
 	event := models.Event{}
 
-	if query := database.Where("id = ?", params["id"]).Find(&event); query.Error != nil {
+	if query := database.Where("(`id` = ?)", params["id"]).Find(&event); query.Error != nil {
 		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			renderer.Status(http.StatusNotFound)
 			return
@@ -165,7 +165,7 @@ func deleteEvent(
 ) {
 	event := models.Event{}
 
-	if query := database.Where("id = ?", params["id"]).Find(&event); query.Error != nil {
+	if query := database.Where("(`id` = ?)", params["id"]).Find(&event); query.Error != nil {
 		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			renderer.Status(http.StatusNotFound)
 			return

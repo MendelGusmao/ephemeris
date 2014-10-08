@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/MendelGusmao/gorm"
 	"github.com/go-martini/martini"
-	"github.com/jinzhu/gorm"
 	"github.com/martini-contrib/binding"
 	"github.com/martini-contrib/render"
 )
@@ -81,7 +81,7 @@ func user(
 	renderer render.Render,
 ) {
 	user := models.User{}
-	query := database.Where("id = ?", params["id"]).First(&user)
+	query := database.Where("(`id` = ?)", params["id"]).First(&user)
 
 	if query.Error != nil {
 		if query.Error == gorm.RecordNotFound {
@@ -107,7 +107,7 @@ func updateUser(
 ) {
 	user := models.User{}
 
-	if query := database.Where("id = ?", params["id"]).Find(&user); query.Error != nil {
+	if query := database.Where("(`id` = ?)", params["id"]).Find(&user); query.Error != nil {
 		if query.Error == gorm.RecordNotFound {
 			renderer.Status(http.StatusNotFound)
 			return
@@ -138,7 +138,7 @@ func deleteUser(
 ) {
 	user := models.User{}
 
-	if query := database.Where("id = ?", params["id"]).Find(&user); query.Error != nil {
+	if query := database.Where("(`id` = ?)", params["id"]).Find(&user); query.Error != nil {
 		if query.Error == gorm.RecordNotFound {
 			renderer.Status(http.StatusNotFound)
 			return
@@ -149,7 +149,7 @@ func deleteUser(
 		return
 	}
 
-	if query := database.Where("id = ?", params["id"]).Delete(&user); query.Error != nil {
+	if query := database.Where("(`id` = ?)", params["id"]).Delete(&user); query.Error != nil {
 		logger.Log(query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return

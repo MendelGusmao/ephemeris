@@ -43,11 +43,8 @@ var _ = Describe("Events", func() {
 	})
 
 	Context("Getting events", func() {
-		BeforeEach(func() {
-			stubs.SelectUser()
-		})
-
 		It("returns HTTP OK", func() {
+			stubs.SelectUser()
 			stubs.SelectAllEvents(stubs.ResultSuccess)
 
 			Request("GET", "/api/events", false)
@@ -61,8 +58,16 @@ var _ = Describe("Events", func() {
 			Expect(response.Code).To(Equal(http.StatusNoContent))
 		})
 
-		It("returns HTTP Internal Server Error", func() {
+		It("returns HTTP Internal Server Error (error fetching event)", func() {
 			stubs.SelectAllEvents(stubs.ResultError)
+
+			Request("GET", "/api/events", false)
+			Expect(response.Code).To(Equal(http.StatusInternalServerError))
+		})
+
+		It("returns HTTP Internal Server Error (error fetching event user)", func() {
+			stubs.SelectAllEvents(stubs.ResultSuccess)
+			stubs.SelectUserWithError()
 
 			Request("GET", "/api/events", false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
@@ -94,11 +99,8 @@ var _ = Describe("Events", func() {
 	})
 
 	Context("Getting an event", func() {
-		BeforeEach(func() {
-			stubs.SelectUser()
-		})
-
 		It("returns HTTP OK", func() {
+			stubs.SelectUser()
 			stubs.SelectEvent(stubs.ResultSuccess)
 
 			Request("GET", "/api/events/1", false)
@@ -112,10 +114,18 @@ var _ = Describe("Events", func() {
 			Expect(response.Code).To(Equal(http.StatusNotFound))
 		})
 
-		It("returns a HTTP Internal Server Error", func() {
+		It("returns HTTP Internal Server Error (error fetching event)", func() {
 			stubs.SelectEvent(stubs.ResultError)
 
-			PostRequest("GET", "/api/events/1", bytes.NewReader(body), true)
+			Request("GET", "/api/events/1", false)
+			Expect(response.Code).To(Equal(http.StatusInternalServerError))
+		})
+
+		It("returns HTTP Internal Server Error (error fetching event user)", func() {
+			stubs.SelectEvent(stubs.ResultSuccess)
+			stubs.SelectUserWithError()
+
+			Request("GET", "/api/events/1", false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})

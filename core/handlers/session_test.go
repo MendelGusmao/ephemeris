@@ -18,7 +18,7 @@ var _ = Describe("Session", func() {
 		testdb.Reset()
 	})
 
-	Context("GET", func() {
+	Context("Getting an user", func() {
 		BeforeEach(func() {
 			stubs.SelectNonExistentUser()
 			stubs.SelectUserWithPassword()
@@ -36,7 +36,7 @@ var _ = Describe("Session", func() {
 		})
 	})
 
-	Context("POST", func() {
+	Context("Creating an user", func() {
 		It("returns HTTP Not Found", func() {
 			stubs.SelectNonExistentUser()
 			stubs.SelectUserWithWrongPassword()
@@ -70,7 +70,7 @@ var _ = Describe("Session", func() {
 		})
 	})
 
-	Context("DELETE", func() {
+	Context("Deleting an user", func() {
 		It("returns HTTP No Content", func() {
 			stubs.SelectUser()
 			stubs.SelectUserWithPassword()

@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/jinzhu/gorm"
+	"github.com/MendelGusmao/gorm"
 )
 
 var Models = make([]interface{}, 0)

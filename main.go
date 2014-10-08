@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/MendelGusmao/gorm"
 	"github.com/go-martini/martini"
-	"github.com/jinzhu/gorm"
 )
 
 func main() {

@@ -10,8 +10,7 @@ import (
 
 var (
 	sqlSelectAllEvents = "SELECT * FROM `events`"
-	sqlSelectEvent     = "SELECT  * FROM `events`  WHERE id = ? ORDER BY `events`.id ASC LIMIT 1"
-	sqlSelectEventAlt  = "SELECT  * FROM `events`  WHERE id = ? LIMIT 1"
+	sqlSelectEvent     = "SELECT  * FROM `events`  WHERE (`id` = ?) LIMIT 1"
 	sqlInsertEvent     = "INSERT INTO `events` (`beginning`,`created_at`,`description`,`end`,`logo_u_r_l`,`name`,`place`,`registration_beginning`,`registration_end`,`status`,`u_r_l`,`updated_at`,`user_id`,`visibility`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 	sqlUpdateEvent     = "UPDATE `events` SET `beginning` = ?, `created_at` = ?, `description` = ?, `end` = ?, `logo_u_r_l` = ?, `name` = ?, `place` = ?, `registration_beginning` = ?, `registration_end` = ?, `status` = ?, `u_r_l` = ?, `updated_at` = ?, `user_id` = ?, `visibility` = ?  WHERE (`id` = ?)"
 	sqlDeleteEvent     = "DELETE FROM `events`  WHERE (`id` = ?)"
@@ -68,14 +67,10 @@ func SelectEvent(result Result) {
 	case ResultSuccess:
 		rows := testdb.RowsFromCSVString(eventFields, strings.Join(eventData, ","))
 		testdb.StubQuery(sqlSelectEvent, rows)
-		testdb.StubQuery(sqlSelectEventAlt, rows)
 	case ResultNoRows:
 		testdb.StubQueryError(sqlSelectEvent, sql.ErrNoRows)
-		testdb.StubQueryError(sqlSelectEventAlt, sql.ErrNoRows)
 	case ResultError:
-		err := errors.New("Forged error: SelectEvent.")
-		testdb.StubQueryError(sqlSelectEvent, err)
-		testdb.StubQueryError(sqlSelectEventAlt, err)
+		testdb.StubQueryError(sqlSelectEvent, errors.New("Forged error: SelectEvent."))
 	}
 }
 

@@ -10,9 +10,8 @@ import (
 
 var (
 	sqlSelectUser                = "SELECT * FROM `users` WHERE (`id` = ?) LIMIT 1"
-	sqlSelectUserAlt             = "SELECT * FROM `users` WHERE id = ? LIMIT 1"
-	sqlSelectUserWithPassword    = "SELECT * FROM `users` WHERE (`username` = ?) AND (`password` = ?) ORDER BY `users`.id ASC LIMIT 1"
-	sqlSelectUserWithPasswordAlt = "SELECT * FROM `users` WHERE (`password` = ?) AND (`username` = ?) ORDER BY `users`.id ASC LIMIT 1"
+	sqlSelectUserWithPassword    = "SELECT * FROM `users` WHERE (`password` = ?) AND (`username` = ?) ORDER BY `users`.id ASC LIMIT 1"
+	sqlSelectUserWithPasswordAlt = "SELECT * FROM `users` WHERE (`username` = ?) AND (`password` = ?) ORDER BY `users`.id ASC LIMIT 1"
 	sqlUpdateUser                = "UPDATE `users` SET `administrator` = ?, `created_at` = ?, `password` = ?, `updated_at` = ?, `username` = ?  WHERE (`id` = ?)"
 
 	userFields = []string{
@@ -34,9 +33,11 @@ var (
 )
 
 func SelectUser() {
-	rows := testdb.RowsFromCSVString(userFields, strings.Join(userData, ","))
-	testdb.StubQuery(sqlSelectUser, rows)
-	testdb.StubQuery(sqlSelectUserAlt, rows)
+	testdb.StubQuery(sqlSelectUser, testdb.RowsFromCSVString(userFields, strings.Join(userData, ",")))
+}
+
+func SelectUserWithError() {
+	testdb.StubQueryError(sqlSelectUser, errors.New("Forged error: SelectUserWithError."))
 }
 
 func SelectNonExistentUser() {
@@ -51,10 +52,13 @@ func SelectUserWithPassword() {
 
 func SelectUserWithWrongPassword() {
 	testdb.StubQueryError(sqlSelectUserWithPassword, sql.ErrNoRows)
+	testdb.StubQueryError(sqlSelectUserWithPasswordAlt, sql.ErrNoRows)
 }
 
-func SelectUserWithError() {
-	testdb.StubQueryError(sqlSelectUserWithPassword, errors.New("Forged error: SelectUserWithError."))
+func SelectUserWithPasswordAndError() {
+	err := errors.New("Forged error: SelectUserWithPasswordAndError.")
+	testdb.StubQueryError(sqlSelectUserWithPassword, err)
+	testdb.StubQueryError(sqlSelectUserWithPasswordAlt, err)
 }
 
 func UpdateUser() {

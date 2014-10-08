@@ -2,7 +2,7 @@ run:
 	@fresh
 
 deps:
-	go get -u github.com/jinzhu/gorm
+	go get -u github.com/MendelGusmao/gorm
 	go get -u github.com/go-martini/martini
 	go get -u github.com/martini-contrib/sessions
 	go get -u github.com/martini-contrib/render

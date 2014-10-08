@@ -1,8 +1,8 @@
 package middleware
 
 import (
+	"github.com/MendelGusmao/gorm"
 	"github.com/go-martini/martini"
-	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 )
 
