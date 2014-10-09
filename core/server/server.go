@@ -12,6 +12,16 @@ import (
 )
 
 func Configure(ephemeris config.EphemerisConfig, m *martini.ClassicMartini) {
+	if ephemeris.Environment == "production" {
+		syslogConfig := middleware.SyslogOptions{
+			Server: ephemeris.Syslog.Server,
+		}
+
+		m.Use(middleware.Syslog(syslogConfig))
+	} else {
+		m.Use(middleware.Stdout())
+	}
+
 	store := sessions.NewCookieStore([]byte(ephemeris.Session.Secret))
 	dbOptions := middleware.DBOptions{
 		Driver:             ephemeris.Database.Driver,
@@ -22,7 +32,6 @@ func Configure(ephemeris config.EphemerisConfig, m *martini.ClassicMartini) {
 	m.Use(sessions.Sessions(ephemeris.Session.Name, store))
 	m.Use(render.Renderer())
 	m.Use(middleware.Database(dbOptions))
-	m.Use(middleware.Stdout())
 
 	if os.Getenv("DEV_RUNNER") == "1" {
 		m.Use(middleware.Fresh)

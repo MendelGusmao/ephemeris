@@ -8,9 +8,11 @@ import (
 var Ephemeris EphemerisConfig
 
 type EphemerisConfig struct {
-	APIRoot  string
-	Database DatabaseConfig
-	Session  SessionConfig
+	Environment string
+	APIRoot     string
+	Database    DatabaseConfig
+	Session     SessionConfig
+	Syslog      SyslogConfig
 }
 
 type DatabaseConfig struct {
@@ -22,6 +24,10 @@ type DatabaseConfig struct {
 type SessionConfig struct {
 	Secret string
 	Name   string
+}
+
+type SyslogConfig struct {
+	Server string
 }
 
 func Load(filename string, config interface{}) error {
