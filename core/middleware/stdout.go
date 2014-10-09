@@ -15,15 +15,15 @@ import (
 var (
 	layout             = "02/01/2006 15:04:05"
 	stdout             = log.New(os.Stdout, "[ephemeris] ", 0)
-	_      core.Logger = (*StdLogger)(nil)
+	_      core.Logger = (*StdOut)(nil)
 )
 
-type StdLogger struct {
+type StdOut struct {
 	*log.Logger
 	template string
 }
 
-func StdoutLogger() martini.Handler {
+func Stdout() martini.Handler {
 	return func(c martini.Context, req *http.Request) {
 		addr := req.Header.Get("X-Real-IP")
 		if addr == "" {
@@ -42,7 +42,7 @@ func StdoutLogger() martini.Handler {
 			addr,
 		)
 
-		c.Map(&StdLogger{
+		c.Map(&StdOut{
 			Logger:   stdout,
 			template: template,
 		})
@@ -51,11 +51,12 @@ func StdoutLogger() martini.Handler {
 	}
 }
 
-func (logger *StdLogger) Log(priority syslog.Priority, message interface{}) {
+func (logger *StdOut) Log(priority syslog.Priority, message interface{}) error {
 	now := time.Now().Format(layout)
 	logger.Printf(logger.template, core.LogPriority(priority), now, message)
+	return nil
 }
 
-func (logger *StdLogger) Logf(priority syslog.Priority, format string, message interface{}) {
-	logger.Log(priority, fmt.Sprintf(format, message))
+func (logger *StdOut) Logf(priority syslog.Priority, format string, message interface{}) error {
+	return logger.Log(priority, fmt.Sprintf(format, message))
 }
