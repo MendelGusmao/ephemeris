@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"database/sql"
+	"ephemeris/core"
 	"ephemeris/core/middleware"
 	"ephemeris/core/models"
 	"ephemeris/core/representers"
 	"ephemeris/core/representers/transcoders"
 	"ephemeris/core/routes"
+	"log/syslog"
 	"net/http"
 
 	"github.com/MendelGusmao/gorm"
@@ -39,7 +41,7 @@ func session(
 
 func newSession(
 	database *gorm.DB,
-	logger *middleware.AppLogger,
+	logger core.Logger,
 	renderer render.Render,
 	session sessions.Session,
 	userRequest representers.UserRequest,
@@ -61,28 +63,28 @@ func newSession(
 
 	if query.Error != nil {
 		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
-			logger.Logf("Unsuccessful login from '%s'", user.Username)
+			logger.Logf(syslog.LOG_INFO, "Unsuccessful login from '%s'", user.Username)
 			renderer.Status(http.StatusNotFound)
 			return
 		}
 
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
-	logger.Logf("'%s' has successfully logged in", user.Username)
+	logger.Logf(syslog.LOG_INFO, "'%s' has successfully logged in", user.Username)
 	session.Set("user.id", user.Id)
 	renderer.Status(http.StatusCreated)
 }
 
 func destroySession(
-	logger *middleware.AppLogger,
+	logger core.Logger,
 	renderer render.Render,
 	session sessions.Session,
 	user *models.User,
 ) {
-	logger.Logf("'%s' has successfully logged out", user.Username)
+	logger.Logf(syslog.LOG_INFO, "'%s' has successfully logged out", user.Username)
 	session.Clear()
 	renderer.Status(http.StatusNoContent)
 }

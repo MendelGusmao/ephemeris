@@ -22,7 +22,7 @@ func Configure(ephemeris config.EphemerisConfig, m *martini.ClassicMartini) {
 	m.Use(sessions.Sessions(ephemeris.Session.Name, store))
 	m.Use(render.Renderer())
 	m.Use(middleware.Database(dbOptions))
-	m.Use(middleware.Logger())
+	m.Use(middleware.StdoutLogger())
 
 	if os.Getenv("DEV_RUNNER") == "1" {
 		m.Use(middleware.Fresh)

@@ -2,12 +2,14 @@ package handlers
 
 import (
 	"database/sql"
+	"ephemeris/core"
 	"ephemeris/core/middleware"
 	"ephemeris/core/models"
 	"ephemeris/core/representers"
 	"ephemeris/core/representers/transcoders"
 	"ephemeris/core/routes"
 	"fmt"
+	"log/syslog"
 	"net/http"
 	"time"
 
@@ -33,7 +35,7 @@ func init() {
 func createEvent(
 	database *gorm.DB,
 	eventRequest representers.EventRequest,
-	logger *middleware.AppLogger,
+	logger core.Logger,
 	renderer render.Render,
 	user *models.User,
 ) {
@@ -41,7 +43,7 @@ func createEvent(
 	transcoders.EventFromRequest(&eventRequest, &event)
 
 	if query := database.Save(&event); query.Error != nil {
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -52,7 +54,7 @@ func createEvent(
 
 func events(
 	database *gorm.DB,
-	logger *middleware.AppLogger,
+	logger core.Logger,
 	renderer render.Render,
 ) {
 	events := make([]models.Event, 0)
@@ -65,7 +67,7 @@ func events(
 			return
 		}
 
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -80,7 +82,7 @@ func events(
 		query := database.Model(event).Related(&event.User)
 
 		if query.Error != nil {
-			logger.Log(query.Error.Error())
+			logger.Log(syslog.LOG_INFO, query.Error.Error())
 			renderer.Status(http.StatusInternalServerError)
 			return
 		}
@@ -94,7 +96,7 @@ func events(
 
 func event(
 	database *gorm.DB,
-	logger *middleware.AppLogger,
+	logger core.Logger,
 	params martini.Params,
 	renderer render.Render,
 ) {
@@ -108,7 +110,7 @@ func event(
 			return
 		}
 
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -116,7 +118,7 @@ func event(
 	query = database.Model(event).Related(&event.User)
 
 	if query.Error != nil {
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -128,7 +130,7 @@ func event(
 func updateEvent(
 	database *gorm.DB,
 	eventRequest representers.EventRequest,
-	logger *middleware.AppLogger,
+	logger core.Logger,
 	params martini.Params,
 	renderer render.Render,
 ) {
@@ -140,7 +142,7 @@ func updateEvent(
 			return
 		}
 
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -148,7 +150,7 @@ func updateEvent(
 	transcoders.EventFromRequest(&eventRequest, &event)
 
 	if query := database.Save(event); query.Error != nil {
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -159,7 +161,7 @@ func updateEvent(
 
 func deleteEvent(
 	database *gorm.DB,
-	logger *middleware.AppLogger,
+	logger core.Logger,
 	params martini.Params,
 	renderer render.Render,
 ) {
@@ -171,13 +173,13 @@ func deleteEvent(
 			return
 		}
 
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
 	if query := database.Delete(&event); query.Error != nil {
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}

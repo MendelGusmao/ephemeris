@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"ephemeris/core"
 	"ephemeris/core/models"
+	"log/syslog"
 	"net/http"
 
 	"github.com/MendelGusmao/gorm"
@@ -14,14 +16,14 @@ func Authorize() martini.Handler {
 	return func(
 		context martini.Context,
 		database *gorm.DB,
-		logger *AppLogger,
+		logger core.Logger,
 		renderer render.Render,
 		session sessions.Session,
 	) {
 		id := session.Get("user.id")
 
 		if id == nil {
-			logger.Log("Not allowed")
+			logger.Log(syslog.LOG_INFO, "Not allowed")
 			renderer.Status(http.StatusForbidden)
 			return
 		}
@@ -34,12 +36,12 @@ func Authorize() martini.Handler {
 				return
 			}
 
-			logger.Log(err.Error())
+			logger.Log(syslog.LOG_INFO, err.Error())
 			renderer.Status(http.StatusInternalServerError)
 			return
 		}
 
-		logger.Logf("Loading user '%s'", user.Username)
+		logger.Logf(syslog.LOG_INFO, "Loading user '%s'", user.Username)
 		context.Map(user)
 	}
 }

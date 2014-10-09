@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"ephemeris/core/middleware"
+	"ephemeris/core"
 	"ephemeris/core/models"
 	"ephemeris/core/representers"
 	"ephemeris/core/representers/transcoders"
 	"ephemeris/core/routes"
 	"fmt"
+	"log/syslog"
 	"net/http"
 	"time"
 
@@ -30,14 +31,14 @@ func init() {
 func createUser(
 	database *gorm.DB,
 	userRequest representers.UserRequest,
-	logger *middleware.AppLogger,
+	logger core.Logger,
 	renderer render.Render,
 ) {
 	user := models.User{}
 	transcoders.UserFromRequest(&userRequest, &user)
 
 	if query := database.Save(&user); query.Error != nil {
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -48,14 +49,14 @@ func createUser(
 
 func users(
 	database *gorm.DB,
-	logger *middleware.AppLogger,
+	logger core.Logger,
 	renderer render.Render,
 ) {
 	users := make([]models.User, 0)
 	lastModified := time.Time{}
 
 	if query := database.Find(&users); query.Error != nil {
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -76,7 +77,7 @@ func users(
 
 func user(
 	database *gorm.DB,
-	logger *middleware.AppLogger,
+	logger core.Logger,
 	params martini.Params,
 	renderer render.Render,
 ) {
@@ -89,7 +90,7 @@ func user(
 			return
 		}
 
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -101,7 +102,7 @@ func user(
 func updateUser(
 	database *gorm.DB,
 	userRequest representers.UserRequest,
-	logger *middleware.AppLogger,
+	logger core.Logger,
 	params martini.Params,
 	renderer render.Render,
 ) {
@@ -113,7 +114,7 @@ func updateUser(
 			return
 		}
 
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -121,7 +122,7 @@ func updateUser(
 	transcoders.UserFromRequest(&userRequest, &user)
 
 	if query := database.Save(user); query.Error != nil {
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -132,7 +133,7 @@ func updateUser(
 
 func deleteUser(
 	database *gorm.DB,
-	logger *middleware.AppLogger,
+	logger core.Logger,
 	params martini.Params,
 	renderer render.Render,
 ) {
@@ -144,13 +145,13 @@ func deleteUser(
 			return
 		}
 
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
 	if query := database.Where("(`id` = ?)", params["id"]).Delete(&user); query.Error != nil {
-		logger.Log(query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
