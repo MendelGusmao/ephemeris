@@ -17,7 +17,11 @@ func main() {
 	buildDatabase()
 
 	m := martini.Classic()
-	server.Configure(config.Ephemeris, m)
+	if err := server.Configure(config.Ephemeris, m); err != nil {
+		fmt.Println("Error configuring server:", err)
+		os.Exit(1)
+	}
+
 	m.Run()
 }
 

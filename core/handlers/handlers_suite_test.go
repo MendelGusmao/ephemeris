@@ -24,7 +24,7 @@ var (
 	testConfig = config.EphemerisConfig{
 		APIRoot:  "/api",
 		Database: config.DatabaseConfig{"testdb", "", 0},
-		Session:  config.SessionConfig{"test", "session"},
+		Session:  config.SessionConfig{"test", [][]byte{{65, 66, 67, 1, 2, 3}}, config.RedisConfig{}},
 	}
 	m      *martini.ClassicMartini
 	cookie string

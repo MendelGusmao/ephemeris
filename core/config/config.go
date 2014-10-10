@@ -22,12 +22,18 @@ type DatabaseConfig struct {
 }
 
 type SessionConfig struct {
-	Secret string
-	Name   string
+	Name     string
+	KeyPairs [][]byte
+	Redis    RedisConfig
 }
 
 type SyslogConfig struct {
 	Server string
+}
+
+type RedisConfig struct {
+	URL                string
+	MaxIdleConnections int
 }
 
 func Load(filename string, config interface{}) error {
