@@ -14,6 +14,8 @@ deps:
 	go get -u github.com/onsi/ginkgo
 	go get -u github.com/onsi/ginkgo/ginkgo
 	go get -u github.com/onsi/gomega
+
+frontend: deps	
 	bower install
 
 test:
