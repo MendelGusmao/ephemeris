@@ -68,7 +68,7 @@ func newSession(
 			return
 		}
 
-		logger.Log(syslog.LOG_INFO, query.Error.Error())
+		logger.Log(syslog.LOG_INFO, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
