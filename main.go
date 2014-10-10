@@ -48,7 +48,7 @@ func readConfiguration() {
 }
 
 func buildDatabase() {
-	db, err := gorm.Open("postgres", config.Ephemeris.Database.URL)
+	db, err := gorm.Open(config.Ephemeris.Database.Driver, config.Ephemeris.Database.URL)
 	defer db.Close()
 
 	if err != nil {
