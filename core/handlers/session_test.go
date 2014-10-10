@@ -72,7 +72,7 @@ var _ = Describe("Session", func() {
 
 	Context("Deleting an user", func() {
 		It("returns HTTP No Content", func() {
-			stubs.SelectUser()
+			stubs.SelectUser(stubs.ResultSuccess)
 			stubs.SelectUserWithPassword()
 
 			Login(false)

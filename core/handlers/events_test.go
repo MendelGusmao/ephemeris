@@ -44,7 +44,7 @@ var _ = Describe("Events", func() {
 
 	Context("Getting events", func() {
 		It("returns HTTP OK", func() {
-			stubs.SelectUser()
+			stubs.SelectUser(stubs.ResultSuccess)
 			stubs.SelectAllEvents(stubs.ResultSuccess)
 
 			Request("GET", "/api/events", false)
@@ -76,8 +76,8 @@ var _ = Describe("Events", func() {
 
 	Context("Creating events", func() {
 		BeforeEach(func() {
-			stubs.UpdateUser()
-			stubs.SelectUser()
+			stubs.UpdateUser(stubs.ResultSuccess)
+			stubs.SelectUser(stubs.ResultSuccess)
 			stubs.SelectUserWithPassword()
 		})
 
@@ -100,7 +100,7 @@ var _ = Describe("Events", func() {
 
 	Context("Getting an event", func() {
 		It("returns HTTP OK", func() {
-			stubs.SelectUser()
+			stubs.SelectUser(stubs.ResultSuccess)
 			stubs.SelectEvent(stubs.ResultSuccess)
 
 			Request("GET", "/api/events/1", false)
@@ -132,7 +132,7 @@ var _ = Describe("Events", func() {
 
 	Context("Updating an event", func() {
 		BeforeEach(func() {
-			stubs.SelectUser()
+			stubs.SelectUser(stubs.ResultSuccess)
 			stubs.SelectUserWithPassword()
 		})
 
@@ -173,7 +173,7 @@ var _ = Describe("Events", func() {
 
 	Context("Deleting an event", func() {
 		BeforeEach(func() {
-			stubs.SelectUser()
+			stubs.SelectUser(stubs.ResultSuccess)
 			stubs.SelectUserWithPassword()
 		})
 

@@ -9,10 +9,13 @@ import (
 )
 
 var (
+	sqlSelectAllUsers            = "SELECT * FROM `users`"
 	sqlSelectUser                = "SELECT * FROM `users` WHERE (`id` = ?) LIMIT 1"
 	sqlSelectUserWithPassword    = "SELECT * FROM `users` WHERE (`password` = ?) AND (`username` = ?) ORDER BY `users`.id ASC LIMIT 1"
 	sqlSelectUserWithPasswordAlt = "SELECT * FROM `users` WHERE (`username` = ?) AND (`password` = ?) ORDER BY `users`.id ASC LIMIT 1"
 	sqlUpdateUser                = "UPDATE `users` SET `administrator` = ?, `created_at` = ?, `password` = ?, `updated_at` = ?, `username` = ?  WHERE (`id` = ?)"
+	sqlInsertUser                = "INSERT INTO `users` (`administrator`,`created_at`,`password`,`updated_at`,`username`) VALUES (?,?,?,?,?)"
+	sqlDeleteUser                = "DELETE FROM `users`  WHERE (`id` = ?)"
 
 	userFields = []string{
 		"id",
@@ -32,8 +35,27 @@ var (
 	}
 )
 
-func SelectUser() {
-	testdb.StubQuery(sqlSelectUser, testdb.RowsFromCSVString(userFields, strings.Join(userData, ",")))
+func SelectAllUsers(result Result) {
+	switch result {
+	case ResultSuccess:
+		testdb.StubQuery(sqlSelectAllUsers, testdb.RowsFromCSVString(userFields, strings.Join(userData, ",")))
+	case ResultNoRows:
+		testdb.StubQueryError(sqlSelectAllUsers, sql.ErrNoRows)
+	case ResultError:
+		testdb.StubQueryError(sqlSelectAllUsers, errors.New("Forged error: SelectAllUsers."))
+	}
+}
+
+func SelectUser(result Result) {
+	switch result {
+	case ResultSuccess:
+		rows := testdb.RowsFromCSVString(userFields, strings.Join(userData, ","))
+		testdb.StubQuery(sqlSelectUser, rows)
+	case ResultNoRows:
+		testdb.StubQueryError(sqlSelectUser, sql.ErrNoRows)
+	case ResultError:
+		testdb.StubQueryError(sqlSelectUser, errors.New("Forged error: SelectUser."))
+	}
 }
 
 func SelectUserWithError() {
@@ -61,6 +83,29 @@ func SelectUserWithPasswordAndError() {
 	testdb.StubQueryError(sqlSelectUserWithPasswordAlt, err)
 }
 
-func UpdateUser() {
-	testdb.StubExec(sqlUpdateUser, testdb.NewResult(1, nil, 1, nil))
+func UpdateUser(result Result) {
+	if result == ResultSuccess {
+		testdb.StubExec(sqlUpdateUser, testdb.NewResult(1, nil, 1, nil))
+		return
+	}
+
+	testdb.StubQueryError(sqlUpdateUser, errors.New("Forged error: UpdateUser."))
+}
+
+func InsertUser(result Result) {
+	if result == ResultSuccess {
+		testdb.StubExec(sqlInsertUser, testdb.NewResult(1, nil, 1, nil))
+		return
+	}
+
+	testdb.StubQueryError(sqlInsertUser, errors.New("Forged error: InsertUser."))
+}
+
+func DeleteUser(result Result) {
+	if result == ResultSuccess {
+		testdb.StubExec(sqlDeleteUser, testdb.NewResult(1, nil, 1, nil))
+		return
+	}
+
+	testdb.StubQueryError(sqlDeleteUser, errors.New("Forged error: DeleteUser."))
 }

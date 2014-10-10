@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"ephemeris/core"
 	"ephemeris/core/models"
 	"ephemeris/core/representers"
@@ -9,6 +10,7 @@ import (
 	"fmt"
 	"log/syslog"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/MendelGusmao/gorm"
@@ -56,6 +58,12 @@ func users(
 	lastModified := time.Time{}
 
 	if query := database.Find(&users); query.Error != nil {
+		// TODO gorm doesn't return gorm.RecordNotFound when using testdb as driver
+		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
+			renderer.Status(http.StatusNoContent)
+			return
+		}
+
 		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
@@ -81,11 +89,13 @@ func user(
 	params martini.Params,
 	renderer render.Render,
 ) {
-	user := models.User{}
-	query := database.Where("(`id` = ?)", params["id"]).First(&user)
+	id, _ := strconv.Atoi(params["id"])
+	user := models.User{Id: id}
+	query := database.Find(&user)
 
 	if query.Error != nil {
-		if query.Error == gorm.RecordNotFound {
+		// TODO gorm doesn't return gorm.RecordNotFound when using testdb as driver
+		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			renderer.Status(http.StatusNotFound)
 			return
 		}
@@ -106,10 +116,11 @@ func updateUser(
 	params martini.Params,
 	renderer render.Render,
 ) {
-	user := models.User{}
+	id, _ := strconv.Atoi(params["id"])
+	user := models.User{Id: id}
 
-	if query := database.Where("(`id` = ?)", params["id"]).Find(&user); query.Error != nil {
-		if query.Error == gorm.RecordNotFound {
+	if query := database.Find(&user); query.Error != nil {
+		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			renderer.Status(http.StatusNotFound)
 			return
 		}
@@ -137,10 +148,12 @@ func deleteUser(
 	params martini.Params,
 	renderer render.Render,
 ) {
-	user := models.User{}
+	id, _ := strconv.Atoi(params["id"])
+	user := models.User{Id: id}
 
-	if query := database.Where("(`id` = ?)", params["id"]).Find(&user); query.Error != nil {
-		if query.Error == gorm.RecordNotFound {
+	if query := database.Find(&user); query.Error != nil {
+		// TODO gorm doesn't return gorm.RecordNotFound when using testdb as driver
+		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			renderer.Status(http.StatusNotFound)
 			return
 		}
@@ -150,11 +163,11 @@ func deleteUser(
 		return
 	}
 
-	if query := database.Where("(`id` = ?)", params["id"]).Delete(&user); query.Error != nil {
+	if query := database.Delete(&user); query.Error != nil {
 		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
-	renderer.Status(http.StatusOK)
+	renderer.Status(http.StatusNoContent)
 }

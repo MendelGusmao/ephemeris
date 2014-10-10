@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"log/syslog"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/MendelGusmao/gorm"
@@ -79,9 +80,7 @@ func events(
 			lastModified = event.UpdatedAt
 		}
 
-		query := database.Model(event).Related(&event.User)
-
-		if query.Error != nil {
+		if query := database.Model(event).Related(&event.User); query.Error != nil {
 			logger.Log(syslog.LOG_INFO, query.Error.Error())
 			renderer.Status(http.StatusInternalServerError)
 			return
@@ -100,10 +99,10 @@ func event(
 	params martini.Params,
 	renderer render.Render,
 ) {
-	event := models.Event{}
-	query := database.Where("(`id` = ?)", params["id"]).Find(&event)
+	id, _ := strconv.Atoi(params["id"])
+	event := models.Event{Id: id}
 
-	if query.Error != nil {
+	if query := database.Find(&event); query.Error != nil {
 		// TODO gorm doesn't return gorm.RecordNotFound when using testdb as driver
 		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			renderer.Status(http.StatusNotFound)
@@ -115,9 +114,7 @@ func event(
 		return
 	}
 
-	query = database.Model(event).Related(&event.User)
-
-	if query.Error != nil {
+	if query := database.Model(event).Related(&event.User); query.Error != nil {
 		logger.Log(syslog.LOG_INFO, query.Error.Error())
 		renderer.Status(http.StatusInternalServerError)
 		return
@@ -134,9 +131,10 @@ func updateEvent(
 	params martini.Params,
 	renderer render.Render,
 ) {
-	event := models.Event{}
+	id, _ := strconv.Atoi(params["id"])
+	event := models.Event{Id: id}
 
-	if query := database.Where("(`id` = ?)", params["id"]).Find(&event); query.Error != nil {
+	if query := database.Find(&event); query.Error != nil {
 		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			renderer.Status(http.StatusNotFound)
 			return
@@ -165,9 +163,10 @@ func deleteEvent(
 	params martini.Params,
 	renderer render.Render,
 ) {
-	event := models.Event{}
+	id, _ := strconv.Atoi(params["id"])
+	event := models.Event{Id: id}
 
-	if query := database.Where("(`id` = ?)", params["id"]).Find(&event); query.Error != nil {
+	if query := database.Find(&event); query.Error != nil {
 		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			renderer.Status(http.StatusNotFound)
 			return
