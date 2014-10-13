@@ -16,7 +16,9 @@ import (
 
 var _ = Describe("Events", func() {
 	var (
-		day, _ = time.ParseDuration("24h")
+		day, _    = time.ParseDuration("24h")
+		eventsURI = "/api/events"
+		eventURI  = "/api/events/1"
 	)
 
 	event := representers.EventRequest{
@@ -48,21 +50,21 @@ var _ = Describe("Events", func() {
 			stubs.SelectUser(stubs.ResultSuccess)
 			stubs.SelectAllEvents(stubs.ResultSuccess)
 
-			Request("GET", "/api/events", false)
+			Request("GET", eventsURI, false)
 			Expect(response.Code).To(Equal(http.StatusOK))
 		})
 
 		It("returns HTTP No Content", func() {
 			stubs.SelectAllEvents(stubs.ResultNoRows)
 
-			Request("GET", "/api/events", false)
+			Request("GET", eventsURI, false)
 			Expect(response.Code).To(Equal(http.StatusNoContent))
 		})
 
 		It("returns HTTP Internal Server Error (error fetching event)", func() {
 			stubs.SelectAllEvents(stubs.ResultError)
 
-			Request("GET", "/api/events", false)
+			Request("GET", eventsURI, false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 
@@ -70,7 +72,7 @@ var _ = Describe("Events", func() {
 			stubs.SelectAllEvents(stubs.ResultSuccess)
 			stubs.SelectUser(stubs.ResultError)
 
-			Request("GET", "/api/events", false)
+			Request("GET", eventsURI, false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})
@@ -86,7 +88,7 @@ var _ = Describe("Events", func() {
 			stubs.InsertEvent(stubs.ResultSuccess)
 
 			Login(false)
-			PostRequest("POST", "/api/events", bytes.NewReader(body), true)
+			PostRequest("POST", eventsURI, bytes.NewReader(body), true)
 			Expect(response.Code).To(Equal(http.StatusCreated))
 		})
 
@@ -94,7 +96,7 @@ var _ = Describe("Events", func() {
 			stubs.InsertEvent(stubs.ResultError)
 
 			Login(false)
-			PostRequest("POST", "/api/events", bytes.NewReader(body), true)
+			PostRequest("POST", eventsURI, bytes.NewReader(body), true)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})
@@ -104,21 +106,21 @@ var _ = Describe("Events", func() {
 			stubs.SelectUser(stubs.ResultSuccess)
 			stubs.SelectEvent(stubs.ResultSuccess)
 
-			Request("GET", "/api/events/1", false)
+			Request("GET", eventURI, false)
 			Expect(response.Code).To(Equal(http.StatusOK))
 		})
 
 		It("returns HTTP Not Found", func() {
 			stubs.SelectEvent(stubs.ResultNoRows)
 
-			Request("GET", "/api/events/1", false)
+			Request("GET", eventURI, false)
 			Expect(response.Code).To(Equal(http.StatusNotFound))
 		})
 
 		It("returns HTTP Internal Server Error (error fetching event)", func() {
 			stubs.SelectEvent(stubs.ResultError)
 
-			Request("GET", "/api/events/1", false)
+			Request("GET", eventURI, false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 
@@ -126,7 +128,7 @@ var _ = Describe("Events", func() {
 			stubs.SelectEvent(stubs.ResultSuccess)
 			stubs.SelectUser(stubs.ResultError)
 
-			Request("GET", "/api/events/1", false)
+			Request("GET", eventURI, false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})
@@ -142,7 +144,7 @@ var _ = Describe("Events", func() {
 			stubs.UpdateEvent(stubs.ResultSuccess)
 
 			Login(false)
-			PostRequest("PUT", "/api/events/1", bytes.NewReader(body), true)
+			PostRequest("PUT", eventURI, bytes.NewReader(body), true)
 			Expect(response.Code).To(Equal(http.StatusOK))
 		})
 
@@ -150,7 +152,7 @@ var _ = Describe("Events", func() {
 			stubs.SelectEvent(stubs.ResultNoRows)
 
 			Login(false)
-			PostRequest("PUT", "/api/events/1", bytes.NewReader(body), true)
+			PostRequest("PUT", eventURI, bytes.NewReader(body), true)
 			Expect(response.Code).To(Equal(http.StatusNotFound))
 		})
 
@@ -158,7 +160,7 @@ var _ = Describe("Events", func() {
 			stubs.SelectEvent(stubs.ResultError)
 
 			Login(false)
-			PostRequest("PUT", "/api/events/1", bytes.NewReader(body), true)
+			PostRequest("PUT", eventURI, bytes.NewReader(body), true)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 
@@ -167,7 +169,7 @@ var _ = Describe("Events", func() {
 			stubs.UpdateEvent(stubs.ResultError)
 
 			Login(false)
-			PostRequest("PUT", "/api/events/1", bytes.NewReader(body), true)
+			PostRequest("PUT", eventURI, bytes.NewReader(body), true)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})
@@ -183,7 +185,7 @@ var _ = Describe("Events", func() {
 			stubs.DeleteEvent(stubs.ResultSuccess)
 
 			Login(false)
-			Request("DELETE", "/api/events/1", true)
+			Request("DELETE", eventURI, true)
 			Expect(response.Code).To(Equal(http.StatusNoContent))
 		})
 
@@ -191,7 +193,7 @@ var _ = Describe("Events", func() {
 			stubs.SelectEvent(stubs.ResultNoRows)
 
 			Login(false)
-			Request("DELETE", "/api/events/1", true)
+			Request("DELETE", eventURI, true)
 			Expect(response.Code).To(Equal(http.StatusNotFound))
 		})
 
@@ -199,7 +201,7 @@ var _ = Describe("Events", func() {
 			stubs.SelectEvent(stubs.ResultError)
 
 			Login(false)
-			Request("DELETE", "/api/events/1", true)
+			Request("DELETE", eventURI, true)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 
@@ -208,7 +210,7 @@ var _ = Describe("Events", func() {
 			stubs.DeleteEvent(stubs.ResultError)
 
 			Login(false)
-			Request("DELETE", "/api/events/1", true)
+			Request("DELETE", eventURI, true)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})
