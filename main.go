@@ -9,15 +9,15 @@ import (
 	"os"
 
 	"github.com/MendelGusmao/gorm"
-	"github.com/go-martini/martini"
 )
 
 func main() {
 	readConfiguration()
 	buildDatabase()
 
-	m := martini.Classic()
-	if err := server.Configure(config.Ephemeris, m); err != nil {
+	m, err := server.Setup(config.Ephemeris)
+
+	if err != nil {
 		fmt.Println("Error configuring server:", err)
 		os.Exit(1)
 	}

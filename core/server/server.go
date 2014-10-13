@@ -12,8 +12,17 @@ import (
 	"github.com/martini-contrib/sessions"
 )
 
-func Configure(ephemeris config.EphemerisConfig, m *martini.ClassicMartini) error {
+func Setup(ephemeris config.EphemerisConfig) (*martini.ClassicMartini, error) {
 	var store sessions.Store
+
+	r := martini.NewRouter()
+	mt := martini.New()
+
+	mt.Use(martini.Recovery())
+	mt.MapTo(r, (*martini.Routes)(nil))
+	mt.Action(r.Handle)
+
+	m := &martini.ClassicMartini{mt, r}
 
 	if ephemeris.Environment == "production" {
 		m.Use(middleware.Syslog(middleware.SyslogOptions{
@@ -23,7 +32,7 @@ func Configure(ephemeris config.EphemerisConfig, m *martini.ClassicMartini) erro
 		uri, err := url.Parse(ephemeris.Session.Redis.URL)
 
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		password := ""
@@ -41,7 +50,7 @@ func Configure(ephemeris config.EphemerisConfig, m *martini.ClassicMartini) erro
 		)
 
 		if err != nil {
-			return err
+			return nil, err
 		}
 	} else {
 		m.Use(middleware.Stdout())
@@ -64,5 +73,5 @@ func Configure(ephemeris config.EphemerisConfig, m *martini.ClassicMartini) erro
 		routes.Apply(r)
 	})
 
-	return nil
+	return m, nil
 }

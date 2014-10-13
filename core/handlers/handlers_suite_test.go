@@ -7,6 +7,7 @@ import (
 	"ephemeris/core/representers"
 	"ephemeris/core/server"
 	"ephemeris/testing/fake"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -34,16 +35,17 @@ var (
 )
 
 func TestMain(t *testing.T) {
-	m = Setup()
+	var err error
+	m, err = server.Setup(testConfig)
+
+	if err != nil {
+		fmt.Println("Error configuring server:", err)
+		t.Fatal(err)
+	}
+
 	testdb.EnableTimeParsingWithFormat(postgresDateFormat)
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Main Suite")
-}
-
-func Setup() *martini.ClassicMartini {
-	m := martini.Classic()
-	server.Configure(testConfig, m)
-	return m
 }
 
 func Request(method, route string, useCookie bool) {
