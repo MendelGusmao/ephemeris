@@ -9,9 +9,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/MendelGusmao/go-testdb"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/rafaeljusto/go-testdb"
 )
 
 var _ = Describe("Users", func() {
@@ -28,40 +28,46 @@ var _ = Describe("Users", func() {
 
 	BeforeEach(func() {
 		testdb.Reset()
+		cookie = ""
+		stubs.SelectUserWithPassword(stubs.ResultSuccess)
+		Login(false)
 	})
 
 	Context("Getting users", func() {
+		BeforeEach(func() {
+			stubs.SelectUser(stubs.ResultSuccess)
+		})
+
 		It("returns HTTP OK", func() {
 			stubs.SelectAllUsers(stubs.ResultSuccess)
 
-			Request("GET", "/api/users", false)
+			Request("GET", "/api/users", true)
 			Expect(response.Code).To(Equal(http.StatusOK))
 		})
 
 		It("returns HTTP No Content", func() {
 			stubs.SelectAllUsers(stubs.ResultNoRows)
 
-			Request("GET", "/api/users", false)
+			Request("GET", "/api/users", true)
 			Expect(response.Code).To(Equal(http.StatusNoContent))
 		})
 
 		It("returns HTTP Internal Server Error (error fetching user)", func() {
 			stubs.SelectAllUsers(stubs.ResultError)
 
-			Request("GET", "/api/users", false)
+			Request("GET", "/api/users", true)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})
 
 	Context("Creating users", func() {
 		BeforeEach(func() {
-			stubs.SelectUserWithPassword()
+			stubs.SelectUser(stubs.ResultSuccess)
 		})
 
 		It("returns a HTTP Created", func() {
 			stubs.InsertUser(stubs.ResultSuccess)
 
-			Login(false)
 			PostRequest("POST", "/api/users", bytes.NewReader(body), true)
 			Expect(response.Code).To(Equal(http.StatusCreated))
 		})
@@ -69,31 +75,34 @@ var _ = Describe("Users", func() {
 		It("returns a HTTP Internal Server Error", func() {
 			stubs.InsertUser(stubs.ResultError)
 
-			Login(false)
 			PostRequest("POST", "/api/users", bytes.NewReader(body), true)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})
 
 	Context("Getting an user", func() {
+		BeforeEach(func() {
+			stubs.SelectUser(stubs.ResultSuccess)
+		})
+
 		It("returns HTTP OK", func() {
 			stubs.SelectUser(stubs.ResultSuccess)
 
-			Request("GET", "/api/users/1", false)
+			Request("GET", "/api/users/1", true)
 			Expect(response.Code).To(Equal(http.StatusOK))
 		})
 
 		It("returns HTTP Not Found", func() {
 			stubs.SelectUser(stubs.ResultNoRows)
 
-			Request("GET", "/api/users/1", false)
+			Request("GET", "/api/users/1", true)
 			Expect(response.Code).To(Equal(http.StatusNotFound))
 		})
 
 		It("returns HTTP Internal Server Error (error fetching user)", func() {
 			stubs.SelectUser(stubs.ResultError)
 
-			Request("GET", "/api/users/1", false)
+			Request("GET", "/api/users/1", true)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})
@@ -101,21 +110,19 @@ var _ = Describe("Users", func() {
 	Context("Updating an user", func() {
 		BeforeEach(func() {
 			stubs.SelectUser(stubs.ResultSuccess)
-			stubs.SelectUserWithPassword()
 		})
 
-		It("returns HTTP OK", func() {
+		It("returns HTTP No Content", func() {
+			stubs.SelectUser(stubs.ResultSuccess)
 			stubs.UpdateUser(stubs.ResultSuccess)
 
-			Login(false)
 			PostRequest("PUT", "/api/users/1", bytes.NewReader(body), true)
-			Expect(response.Code).To(Equal(http.StatusOK))
+			Expect(response.Code).To(Equal(http.StatusNoContent))
 		})
 
 		It("returns HTTP Not Found", func() {
 			stubs.SelectUser(stubs.ResultNoRows)
 
-			Login(false)
 			PostRequest("PUT", "/api/users/1", bytes.NewReader(body), true)
 			Expect(response.Code).To(Equal(http.StatusNotFound))
 		})
@@ -123,7 +130,6 @@ var _ = Describe("Users", func() {
 		It("returns HTTP Internal Server Error (checking if object exists)", func() {
 			stubs.SelectUser(stubs.ResultError)
 
-			Login(false)
 			PostRequest("PUT", "/api/users/1", bytes.NewReader(body), true)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
@@ -132,7 +138,6 @@ var _ = Describe("Users", func() {
 			stubs.SelectUser(stubs.ResultSuccess)
 			stubs.UpdateUser(stubs.ResultError)
 
-			Login(false)
 			PostRequest("PUT", "/api/users/1", bytes.NewReader(body), true)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
@@ -140,14 +145,13 @@ var _ = Describe("Users", func() {
 
 	Context("Deleting an user", func() {
 		BeforeEach(func() {
-			stubs.SelectUserWithPassword()
+			stubs.SelectUser(stubs.ResultSuccess)
 		})
 
 		It("returns HTTP No Content", func() {
 			stubs.SelectUser(stubs.ResultSuccess)
 			stubs.DeleteUser(stubs.ResultSuccess)
 
-			Login(false)
 			Request("DELETE", "/api/users/1", true)
 			Expect(response.Code).To(Equal(http.StatusNoContent))
 		})
@@ -155,7 +159,6 @@ var _ = Describe("Users", func() {
 		It("returns HTTP Not Found", func() {
 			stubs.SelectUser(stubs.ResultNoRows)
 
-			Login(false)
 			Request("DELETE", "/api/users/1", true)
 			Expect(response.Code).To(Equal(http.StatusNotFound))
 		})
@@ -163,7 +166,6 @@ var _ = Describe("Users", func() {
 		It("returns HTTP Internal Server Error (checking if object exists)", func() {
 			stubs.SelectUser(stubs.ResultError)
 
-			Login(false)
 			Request("DELETE", "/api/users/1", true)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
@@ -172,7 +174,6 @@ var _ = Describe("Users", func() {
 			stubs.SelectUser(stubs.ResultSuccess)
 			stubs.DeleteUser(stubs.ResultError)
 
-			Login(false)
 			Request("DELETE", "/api/users/1", true)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})

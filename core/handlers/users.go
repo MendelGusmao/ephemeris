@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"ephemeris/core"
+	"ephemeris/core/middleware"
 	"ephemeris/core/models"
 	"ephemeris/core/representers"
 	"ephemeris/core/representers/transcoders"
@@ -21,12 +22,12 @@ import (
 
 func init() {
 	routes.Register(func(r martini.Router) {
-		r.Get("/users", users)
-		r.Post("/users", binding.Bind(representers.UserRequest{}), createUser)
+		r.Get("/users", middleware.Authorize(), users)
+		r.Post("/users", middleware.Authorize(), binding.Bind(representers.UserRequest{}), createUser)
 
-		r.Get("/users/:id", user)
-		r.Put("/users/:id", binding.Bind(representers.UserRequest{}), updateUser)
-		r.Delete("/users/:id", deleteUser)
+		r.Get("/users/:id", middleware.Authorize(), user)
+		r.Put("/users/:id", middleware.Authorize(), binding.Bind(representers.UserRequest{}), updateUser)
+		r.Delete("/users/:id", middleware.Authorize(), deleteUser)
 	})
 }
 
@@ -139,7 +140,7 @@ func updateUser(
 	}
 
 	renderer.Header().Add("Location", fmt.Sprintf("/users/%d", user.Id))
-	renderer.Status(http.StatusOK)
+	renderer.Status(http.StatusNoContent)
 }
 
 func deleteUser(

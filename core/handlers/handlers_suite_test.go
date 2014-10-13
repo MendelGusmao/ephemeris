@@ -13,10 +13,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/MendelGusmao/go-testdb"
 	"github.com/go-martini/martini"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/rafaeljusto/go-testdb"
 )
 
 var (

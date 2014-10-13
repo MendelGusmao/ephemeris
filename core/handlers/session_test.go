@@ -4,9 +4,9 @@ import (
 	"ephemeris/testing/stubs"
 	"net/http"
 
+	"github.com/MendelGusmao/go-testdb"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/rafaeljusto/go-testdb"
 )
 
 var _ = Describe("Session", func() {
@@ -16,12 +16,13 @@ var _ = Describe("Session", func() {
 
 	BeforeEach(func() {
 		testdb.Reset()
+		cookie = ""
 	})
 
-	Context("Getting an user", func() {
+	Context("Checking", func() {
 		BeforeEach(func() {
-			stubs.SelectNonExistentUser()
-			stubs.SelectUserWithPassword()
+			stubs.SelectUser(stubs.ResultNoRows)
+			stubs.SelectUserWithPassword(stubs.ResultSuccess)
 		})
 
 		It("returns HTTP Forbidden", func() {
@@ -36,26 +37,26 @@ var _ = Describe("Session", func() {
 		})
 	})
 
-	Context("Creating an user", func() {
+	Context("Logging in", func() {
 		It("returns HTTP Not Found", func() {
-			stubs.SelectNonExistentUser()
-			stubs.SelectUserWithWrongPassword()
+			stubs.SelectUser(stubs.ResultNoRows)
+			stubs.SelectUserWithPassword(stubs.ResultNoRows)
 
 			Login(false)
 			Expect(response.Code).To(Equal(http.StatusNotFound))
 		})
 
 		It("returns HTTP Created", func() {
-			stubs.SelectNonExistentUser()
-			stubs.SelectUserWithPassword()
+			stubs.SelectUser(stubs.ResultNoRows)
+			stubs.SelectUserWithPassword(stubs.ResultSuccess)
 
 			Login(false)
 			Expect(response.Code).To(Equal(http.StatusCreated))
 		})
 
 		It("returns HTTP No Content", func() {
-			stubs.SelectNonExistentUser()
-			stubs.SelectUserWithPassword()
+			stubs.SelectUser(stubs.ResultNoRows)
+			stubs.SelectUserWithPassword(stubs.ResultSuccess)
 
 			Login(false)
 			Login(true)
@@ -63,17 +64,17 @@ var _ = Describe("Session", func() {
 		})
 
 		It("returns HTTP Internal Server Error", func() {
-			stubs.SelectUserWithError()
+			stubs.SelectUserWithPassword(stubs.ResultError)
 
 			Login(false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})
 
-	Context("Deleting an user", func() {
+	Context("Logging out", func() {
 		It("returns HTTP No Content", func() {
 			stubs.SelectUser(stubs.ResultSuccess)
-			stubs.SelectUserWithPassword()
+			stubs.SelectUserWithPassword(stubs.ResultSuccess)
 
 			Login(false)
 			Request("DELETE", uri, true)

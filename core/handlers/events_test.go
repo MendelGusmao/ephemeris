@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/MendelGusmao/go-testdb"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/rafaeljusto/go-testdb"
 )
 
 var _ = Describe("Events", func() {
@@ -40,6 +40,7 @@ var _ = Describe("Events", func() {
 
 	BeforeEach(func() {
 		testdb.Reset()
+		cookie = ""
 	})
 
 	Context("Getting events", func() {
@@ -67,7 +68,7 @@ var _ = Describe("Events", func() {
 
 		It("returns HTTP Internal Server Error (error fetching event user)", func() {
 			stubs.SelectAllEvents(stubs.ResultSuccess)
-			stubs.SelectUserWithError()
+			stubs.SelectUser(stubs.ResultError)
 
 			Request("GET", "/api/events", false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
@@ -78,7 +79,7 @@ var _ = Describe("Events", func() {
 		BeforeEach(func() {
 			stubs.UpdateUser(stubs.ResultSuccess)
 			stubs.SelectUser(stubs.ResultSuccess)
-			stubs.SelectUserWithPassword()
+			stubs.SelectUserWithPassword(stubs.ResultSuccess)
 		})
 
 		It("returns a HTTP Created", func() {
@@ -123,7 +124,7 @@ var _ = Describe("Events", func() {
 
 		It("returns HTTP Internal Server Error (error fetching event user)", func() {
 			stubs.SelectEvent(stubs.ResultSuccess)
-			stubs.SelectUserWithError()
+			stubs.SelectUser(stubs.ResultError)
 
 			Request("GET", "/api/events/1", false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
@@ -133,7 +134,7 @@ var _ = Describe("Events", func() {
 	Context("Updating an event", func() {
 		BeforeEach(func() {
 			stubs.SelectUser(stubs.ResultSuccess)
-			stubs.SelectUserWithPassword()
+			stubs.SelectUserWithPassword(stubs.ResultSuccess)
 		})
 
 		It("returns HTTP OK", func() {
@@ -174,7 +175,7 @@ var _ = Describe("Events", func() {
 	Context("Deleting an event", func() {
 		BeforeEach(func() {
 			stubs.SelectUser(stubs.ResultSuccess)
-			stubs.SelectUserWithPassword()
+			stubs.SelectUserWithPassword(stubs.ResultSuccess)
 		})
 
 		It("returns HTTP No Content", func() {

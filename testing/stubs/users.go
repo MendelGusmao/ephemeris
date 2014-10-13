@@ -5,14 +5,14 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/rafaeljusto/go-testdb"
+	"github.com/MendelGusmao/go-testdb"
 )
 
 var (
 	sqlSelectAllUsers            = "SELECT * FROM `users`"
 	sqlSelectUser                = "SELECT * FROM `users` WHERE (`id` = ?) LIMIT 1"
-	sqlSelectUserWithPassword    = "SELECT * FROM `users` WHERE (`password` = ?) AND (`username` = ?) ORDER BY `users`.id ASC LIMIT 1"
-	sqlSelectUserWithPasswordAlt = "SELECT * FROM `users` WHERE (`username` = ?) AND (`password` = ?) ORDER BY `users`.id ASC LIMIT 1"
+	sqlSelectUserWithPassword    = "SELECT * FROM `users` WHERE (`password` = ?) AND (`username` = ?) LIMIT 1"
+	sqlSelectUserWithPasswordAlt = "SELECT * FROM `users` WHERE (`username` = ?) AND (`password` = ?) LIMIT 1"
 	sqlUpdateUser                = "UPDATE `users` SET `administrator` = ?, `created_at` = ?, `password` = ?, `updated_at` = ?, `username` = ?  WHERE (`id` = ?)"
 	sqlInsertUser                = "INSERT INTO `users` (`administrator`,`created_at`,`password`,`updated_at`,`username`) VALUES (?,?,?,?,?)"
 	sqlDeleteUser                = "DELETE FROM `users`  WHERE (`id` = ?)"
@@ -58,23 +58,19 @@ func SelectUser(result Result) {
 	}
 }
 
-func SelectUserWithError() {
-	testdb.StubQueryError(sqlSelectUser, errors.New("Forged error: SelectUserWithError."))
-}
-
-func SelectNonExistentUser() {
-	testdb.StubQueryError(sqlSelectUser, sql.ErrNoRows)
-}
-
-func SelectUserWithPassword() {
-	rows := testdb.RowsFromCSVString(userFields, strings.Join(userData, ","))
-	testdb.StubQuery(sqlSelectUserWithPassword, rows)
-	testdb.StubQuery(sqlSelectUserWithPasswordAlt, rows)
-}
-
-func SelectUserWithWrongPassword() {
-	testdb.StubQueryError(sqlSelectUserWithPassword, sql.ErrNoRows)
-	testdb.StubQueryError(sqlSelectUserWithPasswordAlt, sql.ErrNoRows)
+func SelectUserWithPassword(result Result) {
+	switch result {
+	case ResultSuccess:
+		rows := testdb.RowsFromCSVString(userFields, strings.Join(userData, ","))
+		testdb.StubQuery(sqlSelectUserWithPassword, rows)
+		testdb.StubQuery(sqlSelectUserWithPasswordAlt, rows)
+	case ResultNoRows:
+		testdb.StubQuery(sqlSelectUserWithPassword, sql.ErrNoRows)
+		testdb.StubQuery(sqlSelectUserWithPasswordAlt, sql.ErrNoRows)
+	case ResultError:
+		testdb.StubQueryError(sqlSelectUserWithPassword, errors.New("Forged error: SelectUserWithPassword."))
+		testdb.StubQueryError(sqlSelectUserWithPasswordAlt, errors.New("Forged error: SelectUserWithPassword."))
+	}
 }
 
 func SelectUserWithPasswordAndError() {

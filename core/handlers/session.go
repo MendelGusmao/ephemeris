@@ -36,7 +36,6 @@ func session(
 	}
 
 	renderer.Status(http.StatusNoContent)
-
 }
 
 func newSession(
@@ -54,14 +53,7 @@ func newSession(
 	user := models.User{}
 	transcoders.UserFromRequest(&userRequest, &user)
 
-	query := database.Where(
-		&models.User{
-			Username: user.Username,
-			Password: user.Password,
-		},
-	).First(&user)
-
-	if query.Error != nil {
+	if query := database.Where(&user).Find(&user); query.Error != nil {
 		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			logger.Logf(syslog.LOG_INFO, "Unsuccessful login from '%s'", user.Username)
 			renderer.Status(http.StatusNotFound)
