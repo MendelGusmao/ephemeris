@@ -5,7 +5,6 @@ import (
 	"ephemeris/core/middleware"
 	"ephemeris/core/routes"
 	"net/url"
-	"os"
 
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
@@ -64,10 +63,6 @@ func Setup(ephemeris config.EphemerisConfig) (*martini.ClassicMartini, error) {
 		URL:                ephemeris.Database.URL,
 		MaxIdleConnections: ephemeris.Database.MaxIdleConnections,
 	}))
-
-	if os.Getenv("DEV_RUNNER") == "1" {
-		m.Use(middleware.Fresh)
-	}
 
 	m.Group(ephemeris.APIRoot, func(r martini.Router) {
 		routes.Apply(r)
