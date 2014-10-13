@@ -6,7 +6,7 @@ type LogPriority syslog.Priority
 
 type Logger interface {
 	Log(priority syslog.Priority, message interface{}) error
-	Logf(priority syslog.Priority, format string, message interface{}) error
+	Logf(priority syslog.Priority, format string, message ...interface{}) error
 }
 
 func (p LogPriority) String() string {

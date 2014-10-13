@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/syslog"
 	"net/http"
+	"time"
 
 	"github.com/go-martini/martini"
 )
@@ -33,7 +34,9 @@ func Syslog(syslogOptions SyslogOptions) martini.Handler {
 		}
 	}
 
-	return func(c martini.Context, req *http.Request) {
+	return func(c martini.Context, res http.ResponseWriter, req *http.Request) {
+		start := time.Now()
+
 		addr := req.Header.Get("X-Real-IP")
 		if addr == "" {
 			addr = req.Header.Get("X-Forwarded-For")
@@ -51,12 +54,18 @@ func Syslog(syslogOptions SyslogOptions) martini.Handler {
 			addr,
 		)
 
-		c.Map(&SysLog{
+		sysLog := SysLog{
 			Writer:   writer,
 			template: template,
-		})
+		}
 
+		sysLog.Log(syslog.LOG_INFO, "Started")
+
+		c.Map(&sysLog)
+		rw := res.(martini.ResponseWriter)
 		c.Next()
+
+		sysLog.Logf(syslog.LOG_INFO, "Completed %v %s in %v\n", rw.Status(), http.StatusText(rw.Status()), time.Since(start))
 	}
 }
 
@@ -85,6 +94,6 @@ func (logger *SysLog) Log(priority syslog.Priority, message interface{}) error {
 	return nil
 }
 
-func (logger *SysLog) Logf(priority syslog.Priority, format string, message interface{}) error {
-	return logger.Log(priority, fmt.Sprintf(format, message))
+func (logger *SysLog) Logf(priority syslog.Priority, format string, message ...interface{}) error {
+	return logger.Log(priority, fmt.Sprintf(format, message...))
 }

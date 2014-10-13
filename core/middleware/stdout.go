@@ -24,7 +24,9 @@ type StdOut struct {
 }
 
 func Stdout() martini.Handler {
-	return func(c martini.Context, req *http.Request) {
+	return func(c martini.Context, res http.ResponseWriter, req *http.Request) {
+		start := time.Now()
+
 		addr := req.Header.Get("X-Real-IP")
 		if addr == "" {
 			addr = req.Header.Get("X-Forwarded-For")
@@ -42,12 +44,18 @@ func Stdout() martini.Handler {
 			addr,
 		)
 
-		c.Map(&StdOut{
+		stdout := StdOut{
 			Logger:   stdout,
 			template: template,
-		})
+		}
 
+		stdout.Log(syslog.LOG_INFO, "Started")
+
+		c.Map(&stdout)
+		rw := res.(martini.ResponseWriter)
 		c.Next()
+
+		stdout.Logf(syslog.LOG_INFO, "Completed %v %s in %v\n", rw.Status(), http.StatusText(rw.Status()), time.Since(start))
 	}
 }
 
@@ -57,6 +65,6 @@ func (logger *StdOut) Log(priority syslog.Priority, message interface{}) error {
 	return nil
 }
 
-func (logger *StdOut) Logf(priority syslog.Priority, format string, message interface{}) error {
-	return logger.Log(priority, fmt.Sprintf(format, message))
+func (logger *StdOut) Logf(priority syslog.Priority, format string, message ...interface{}) error {
+	return logger.Log(priority, fmt.Sprintf(format, message...))
 }
