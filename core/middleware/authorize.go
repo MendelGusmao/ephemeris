@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"database/sql"
 	"ephemeris/core"
 	"ephemeris/core/models"
 	"log/syslog"
@@ -28,10 +29,10 @@ func Authorize() martini.Handler {
 			return
 		}
 
-		user, err := loadUser(database, id)
+		user, err := loadUser(database, id.(int))
 
 		if err != nil {
-			if err == gorm.RecordNotFound {
+			if err == gorm.RecordNotFound || err == sql.ErrNoRows {
 				renderer.Status(http.StatusForbidden)
 				return
 			}
@@ -46,13 +47,13 @@ func Authorize() martini.Handler {
 	}
 }
 
-func loadUser(database *gorm.DB, id interface{}) (*models.User, error) {
-	user := &models.User{}
-	query := database.Where("(`id` = ?)", id).Find(user)
+func loadUser(database *gorm.DB, id int) (*models.User, error) {
+	user := models.User{Id: id}
+	query := database.Find(&user)
 
 	if query.Error != nil {
 		return nil, query.Error
 	}
 
-	return user, nil
+	return &user, nil
 }
