@@ -14,6 +14,8 @@ import (
 func Setup(ephemeris config.EphemerisConfig) (*martini.ClassicMartini, error) {
 	var store sessions.Store
 
+	martini.Env = ephemeris.Environment
+
 	r := martini.NewRouter()
 	mt := martini.New()
 
@@ -23,7 +25,7 @@ func Setup(ephemeris config.EphemerisConfig) (*martini.ClassicMartini, error) {
 
 	m := &martini.ClassicMartini{mt, r}
 
-	if ephemeris.Environment == "production" {
+	if ephemeris.Environment == martini.Prod {
 		m.Use(middleware.Syslog(middleware.SyslogOptions{
 			Server: ephemeris.Syslog.Server,
 		}))

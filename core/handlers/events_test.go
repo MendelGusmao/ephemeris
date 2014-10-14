@@ -139,13 +139,13 @@ var _ = Describe("Events", func() {
 			stubs.SelectUserWithPassword(stubs.ResultSuccess)
 		})
 
-		It("returns HTTP OK", func() {
+		It("returns HTTP No Content", func() {
 			stubs.SelectEvent(stubs.ResultSuccess)
 			stubs.UpdateEvent(stubs.ResultSuccess)
 
 			Login(false)
 			PostRequest("PUT", eventURI, bytes.NewReader(body), true)
-			Expect(response.Code).To(Equal(http.StatusOK))
+			Expect(response.Code).To(Equal(http.StatusNoContent))
 		})
 
 		It("returns HTTP Not Found", func() {

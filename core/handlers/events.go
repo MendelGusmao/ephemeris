@@ -29,7 +29,7 @@ func init() {
 		r.Get("/events/:id", event)
 		r.Put("/events/:id", middleware.Authorize(),
 			binding.Bind(representers.EventRequest{}), updateEvent)
-		r.Delete("/events/:id", deleteEvent)
+		r.Delete("/events/:id", middleware.Authorize(), deleteEvent)
 	})
 }
 
@@ -120,7 +120,7 @@ func event(
 		return
 	}
 
-	renderer.Header().Add("Last-Modified", event.CreatedAt.UTC().Format(time.RFC1123))
+	renderer.Header().Add("Last-Modified", event.UpdatedAt.UTC().Format(time.RFC1123))
 	renderer.JSON(http.StatusOK, transcoders.EventToResponse(&event))
 }
 
@@ -154,7 +154,7 @@ func updateEvent(
 	}
 
 	renderer.Header().Add("Location", fmt.Sprintf("/events/%d", event.Id))
-	renderer.Status(http.StatusOK)
+	renderer.Status(http.StatusNoContent)
 }
 
 func deleteEvent(
