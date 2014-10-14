@@ -41,7 +41,7 @@ func createUser(
 	transcoders.UserFromRequest(&userRequest, &user)
 
 	if query := database.Save(&user); query.Error != nil {
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -65,7 +65,7 @@ func users(
 			return
 		}
 
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -101,7 +101,7 @@ func user(
 			return
 		}
 
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -126,7 +126,7 @@ func updateUser(
 			return
 		}
 
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -134,7 +134,7 @@ func updateUser(
 	transcoders.UserFromRequest(&userRequest, &user)
 
 	if query := database.Save(user); query.Error != nil {
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -159,13 +159,13 @@ func deleteUser(
 			return
 		}
 
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
 	if query := database.Delete(&user); query.Error != nil {
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}

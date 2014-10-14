@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"log/syslog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -24,6 +25,7 @@ var (
 	response   *httptest.ResponseRecorder
 	testConfig = config.EphemerisConfig{
 		APIRoot:  "/api",
+		Log:      config.LogConfig{syslog.LOG_DEBUG, config.SyslogConfig{}},
 		Database: config.DatabaseConfig{"testdb", "", 0},
 		Session:  config.SessionConfig{"test", [][]byte{{65, 66, 67, 1, 2, 3}}, config.RedisConfig{}},
 	}

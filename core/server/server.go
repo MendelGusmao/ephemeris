@@ -27,8 +27,8 @@ func Setup(ephemeris config.EphemerisConfig) (*martini.ClassicMartini, error) {
 
 	if ephemeris.Environment == martini.Prod {
 		m.Use(middleware.Syslog(middleware.SyslogOptions{
-			Server: ephemeris.Syslog.Server,
-		}))
+			URL: ephemeris.Log.Syslog.URL,
+		}, ephemeris.Log.Level))
 
 		uri, err := url.Parse(ephemeris.Session.Redis.URL)
 
@@ -54,7 +54,7 @@ func Setup(ephemeris config.EphemerisConfig) (*martini.ClassicMartini, error) {
 			return nil, err
 		}
 	} else {
-		m.Use(middleware.Stdout())
+		m.Use(middleware.Stdout(ephemeris.Log.Level))
 		store = sessions.NewCookieStore(ephemeris.Session.KeyPairs...)
 	}
 

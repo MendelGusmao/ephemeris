@@ -55,17 +55,17 @@ func newSession(
 
 	if query := database.Where(&user).Find(&user); query.Error != nil {
 		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
-			logger.Logf(syslog.LOG_INFO, "Unsuccessful login from '%s'", user.Username)
+			logger.Logf(syslog.LOG_WARNING, "Unsuccessful login from '%s'", user.Username)
 			renderer.Status(http.StatusNotFound)
 			return
 		}
 
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
-	logger.Logf(syslog.LOG_INFO, "'%s' has successfully logged in", user.Username)
+	logger.Logf(syslog.LOG_NOTICE, "'%s' has successfully logged in", user.Username)
 	session.Set("user.id", user.Id)
 	renderer.Status(http.StatusCreated)
 }
@@ -76,7 +76,7 @@ func destroySession(
 	session sessions.Session,
 	user *models.User,
 ) {
-	logger.Logf(syslog.LOG_INFO, "'%s' has successfully logged out", user.Username)
+	logger.Logf(syslog.LOG_NOTICE, "'%s' has successfully logged out", user.Username)
 	session.Clear()
 	renderer.Status(http.StatusNoContent)
 }

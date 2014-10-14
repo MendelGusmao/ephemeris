@@ -24,7 +24,7 @@ func Authorize() martini.Handler {
 		id := session.Get("user.id")
 
 		if id == nil {
-			logger.Log(syslog.LOG_INFO, "Not allowed")
+			logger.Log(syslog.LOG_DEBUG, "Not allowed")
 			renderer.Status(http.StatusForbidden)
 			return
 		}
@@ -37,12 +37,12 @@ func Authorize() martini.Handler {
 				return
 			}
 
-			logger.Log(syslog.LOG_INFO, err.Error())
+			logger.Log(syslog.LOG_ERR, err)
 			renderer.Status(http.StatusInternalServerError)
 			return
 		}
 
-		logger.Logf(syslog.LOG_INFO, "Loading user '%s'", user.Username)
+		logger.Logf(syslog.LOG_DEBUG, "Loading user '%s'", user.Username)
 		context.Map(user)
 	}
 }

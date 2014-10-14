@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log/syslog"
 )
 
 var Ephemeris EphemerisConfig
@@ -10,9 +11,14 @@ var Ephemeris EphemerisConfig
 type EphemerisConfig struct {
 	Environment string
 	APIRoot     string
+	Log         LogConfig
 	Database    DatabaseConfig
 	Session     SessionConfig
-	Syslog      SyslogConfig
+}
+
+type LogConfig struct {
+	Level  syslog.Priority
+	Syslog SyslogConfig
 }
 
 type DatabaseConfig struct {
@@ -28,7 +34,7 @@ type SessionConfig struct {
 }
 
 type SyslogConfig struct {
-	Server string
+	URL string
 }
 
 type RedisConfig struct {

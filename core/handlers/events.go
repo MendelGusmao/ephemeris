@@ -44,7 +44,7 @@ func createEvent(
 	transcoders.EventFromRequest(&eventRequest, &event)
 
 	if query := database.Save(&event); query.Error != nil {
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -68,7 +68,7 @@ func events(
 			return
 		}
 
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -81,7 +81,7 @@ func events(
 		}
 
 		if query := database.Model(event).Related(&event.User); query.Error != nil {
-			logger.Log(syslog.LOG_INFO, query.Error)
+			logger.Log(syslog.LOG_ERR, query.Error)
 			renderer.Status(http.StatusInternalServerError)
 			return
 		}
@@ -109,13 +109,13 @@ func event(
 			return
 		}
 
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
 	if query := database.Model(event).Related(&event.User); query.Error != nil {
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -140,7 +140,7 @@ func updateEvent(
 			return
 		}
 
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -148,7 +148,7 @@ func updateEvent(
 	transcoders.EventFromRequest(&eventRequest, &event)
 
 	if query := database.Save(event); query.Error != nil {
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
@@ -172,13 +172,13 @@ func deleteEvent(
 			return
 		}
 
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}
 
 	if query := database.Delete(&event); query.Error != nil {
-		logger.Log(syslog.LOG_INFO, query.Error)
+		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return
 	}

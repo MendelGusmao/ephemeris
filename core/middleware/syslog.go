@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"ephemeris/core"
+	"ephemeris/core/config"
 	"fmt"
 	"log/syslog"
 	"net/http"
@@ -17,20 +18,21 @@ var (
 type SysLog struct {
 	*syslog.Writer
 	template string
+	level    syslog.Priority
 }
 
 type SyslogOptions struct {
-	Server string
+	URL string
 }
 
-func Syslog(syslogOptions SyslogOptions) martini.Handler {
-	writer, err := syslog.Dial("tcp", syslogOptions.Server, syslog.LOG_INFO, "ephemeris")
+func Syslog(syslogOptions SyslogOptions, level syslog.Priority) martini.Handler {
+	writer, err := syslog.Dial("tcp", syslogOptions.URL, syslog.LOG_INFO, "ephemeris")
 
 	if err != nil {
-		writer, err = syslog.Dial("udp", syslogOptions.Server, syslog.LOG_INFO, "ephemeris")
+		writer, err = syslog.Dial("udp", syslogOptions.URL, syslog.LOG_INFO, "ephemeris")
 
 		if err != nil {
-			return Stdout()
+			return Stdout(level)
 		}
 	}
 
@@ -57,19 +59,24 @@ func Syslog(syslogOptions SyslogOptions) martini.Handler {
 		sysLog := SysLog{
 			Writer:   writer,
 			template: template,
+			level:    level,
 		}
 
-		sysLog.Log(syslog.LOG_INFO, "Started")
+		sysLog.Log(syslog.LOG_DEBUG, "Started")
 
 		c.Map(&sysLog)
 		rw := res.(martini.ResponseWriter)
 		c.Next()
 
-		sysLog.Logf(syslog.LOG_INFO, "Completed %v %s in %v\n", rw.Status(), http.StatusText(rw.Status()), time.Since(start))
+		sysLog.Logf(syslog.LOG_DEBUG, "Completed %v %s in %v\n", rw.Status(), http.StatusText(rw.Status()), time.Since(start))
 	}
 }
 
 func (logger *SysLog) Log(priority syslog.Priority, message interface{}) error {
+	if priority > config.Ephemeris.Log.Level {
+		return nil
+	}
+
 	msg := fmt.Sprintf(logger.template, message)
 
 	switch priority {
@@ -95,5 +102,9 @@ func (logger *SysLog) Log(priority syslog.Priority, message interface{}) error {
 }
 
 func (logger *SysLog) Logf(priority syslog.Priority, format string, message ...interface{}) error {
+	if priority > config.Ephemeris.Log.Level {
+		return nil
+	}
+
 	return logger.Log(priority, fmt.Sprintf(format, message...))
 }
