@@ -2,7 +2,6 @@ run:
 	@fresh
 
 deps:
-	go get -u github.com/ae0000/fresh
 	go get -u github.com/go-martini/martini
 	go get -u github.com/lib/pq
 	go get -u github.com/martini-contrib/binding
@@ -13,7 +12,7 @@ deps:
 	go get -u github.com/onsi/ginkgo
 	go get -u github.com/onsi/ginkgo/ginkgo
 	go get -u github.com/onsi/gomega
-	go get -u github.com/pilu/fresh
+	go get -u github.com/ae0000/fresh
 
 frontend: deps	
 	bower install
