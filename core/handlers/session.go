@@ -7,6 +7,7 @@ import (
 	"ephemeris/core/models"
 	"ephemeris/core/representers"
 	"ephemeris/core/routes"
+	"fmt"
 	"log/syslog"
 	"net/http"
 
@@ -68,6 +69,7 @@ func newSession(
 
 	logger.Logf(syslog.LOG_NOTICE, "'%s' has successfully logged in", user.Username)
 	session.Set("user.id", user.Id)
+	renderer.Header().Add("Location", fmt.Sprintf("/user/%d", user.Id))
 	renderer.Status(http.StatusCreated)
 }
 

@@ -7,4 +7,4 @@ angular.module('ephemeris', ['ngResource', 'ui.router', 'ui.bootstrap'])
   .config(['$httpProvider', function($httpProvider) {
     $httpProvider.interceptors.push('ErrorInterceptor');
   }])
-  .value('APIRoot', '/api');
+  .constant('APIRoot', '/api');

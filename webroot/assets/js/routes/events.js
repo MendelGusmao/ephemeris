@@ -1,9 +1,7 @@
 'use strict';
 
 angular.module('ephemeris')
-  .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
-    $urlRouterProvider.otherwise('/events');
-
+  .config(['$stateProvider', function($stateProvider) {
     $stateProvider
       .state('events-list', {
         url: '/events',
@@ -21,5 +19,4 @@ angular.module('ephemeris')
         url: '/events/:id/edit',
         templateUrl: '/assets/views/events/edit.html'
       });
-    }
-  ]);
+  }]);
