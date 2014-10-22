@@ -6,7 +6,6 @@ import (
 	"ephemeris/core/middleware"
 	"ephemeris/core/models"
 	"ephemeris/core/representers"
-	"ephemeris/core/representers/transcoders"
 	"ephemeris/core/routes"
 	"log/syslog"
 	"net/http"
@@ -21,7 +20,7 @@ import (
 func init() {
 	routes.Register(func(r martini.Router) {
 		r.Get("/session", session)
-		r.Post("/session", binding.Bind(representers.UserRequest{}), newSession)
+		r.Post("/session", binding.Bind(representers.UserCredentials{}), newSession)
 		r.Delete("/session", middleware.Authorize(), destroySession)
 	})
 }
@@ -43,7 +42,7 @@ func newSession(
 	logger core.Logger,
 	renderer render.Render,
 	session sessions.Session,
-	userRequest representers.UserRequest,
+	credentials representers.UserCredentials,
 ) {
 	if session.Get("user.id") != nil {
 		renderer.Status(http.StatusNoContent)
@@ -51,9 +50,11 @@ func newSession(
 	}
 
 	user := models.User{}
-	transcoders.UserFromRequest(&userRequest, &user)
 
-	if query := database.Where(&user).Find(&user); query.Error != nil {
+	if query := database.Where(&models.User{
+		Username: credentials.Username,
+		Password: *credentials.Password,
+	}).Find(&user); query.Error != nil {
 		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			logger.Logf(syslog.LOG_WARNING, "Unsuccessful login from '%s'", user.Username)
 			renderer.Status(http.StatusNotFound)
