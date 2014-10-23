@@ -21,7 +21,7 @@ func init() {
 	routes.Register(func(r martini.Router) {
 		r.Get("/session", session)
 		r.Post("/session", binding.Bind(representers.UserCredentials{}), newSession)
-		r.Delete("/session", middleware.Authorize(), destroySession)
+		r.Delete("/session", middleware.Authorize(models.UserRoleNone), destroySession)
 	})
 }
 

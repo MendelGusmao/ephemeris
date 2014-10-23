@@ -13,7 +13,7 @@ import (
 	"github.com/martini-contrib/sessions"
 )
 
-func Authorize() martini.Handler {
+func Authorize(role models.UserRole) martini.Handler {
 	return func(
 		context martini.Context,
 		database *gorm.DB,
@@ -29,31 +29,26 @@ func Authorize() martini.Handler {
 			return
 		}
 
-		user, err := loadUser(database, id.(int))
+		user := models.User{Id: id.(int)}
 
-		if err != nil {
-			if err == gorm.RecordNotFound || err == sql.ErrNoRows {
+		if query := database.Find(&user); query.Error != nil {
+			if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 				renderer.Status(http.StatusForbidden)
 				return
 			}
 
-			logger.Log(syslog.LOG_ERR, err)
+			logger.Log(syslog.LOG_ERR, query.Error)
 			renderer.Status(http.StatusInternalServerError)
 			return
 		}
 
+		if user.Role < role {
+			logger.Logf(syslog.LOG_WARNING, "User '%s' has no privileges for this action", user.Username)
+			renderer.Status(http.StatusForbidden)
+			return
+		}
+
 		logger.Logf(syslog.LOG_DEBUG, "Loading user '%s'", user.Username)
-		context.Map(user)
+		context.Map(&user)
 	}
-}
-
-func loadUser(database *gorm.DB, id int) (*models.User, error) {
-	user := models.User{Id: id}
-	query := database.Find(&user)
-
-	if query.Error != nil {
-		return nil, query.Error
-	}
-
-	return &user, nil
 }

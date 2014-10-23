@@ -23,13 +23,13 @@ import (
 func init() {
 	routes.Register(func(r martini.Router) {
 		r.Get("/events", events)
-		r.Post("/events", middleware.Authorize(),
+		r.Post("/events", middleware.Authorize(models.UserRoleManager),
 			binding.Bind(representers.EventRequest{}), createEvent)
 
 		r.Get("/events/:id", event)
-		r.Put("/events/:id", middleware.Authorize(),
+		r.Put("/events/:id", middleware.Authorize(models.UserRoleManager),
 			binding.Bind(representers.EventRequest{}), updateEvent)
-		r.Delete("/events/:id", middleware.Authorize(), deleteEvent)
+		r.Delete("/events/:id", middleware.Authorize(models.UserRoleManager), deleteEvent)
 	})
 }
 

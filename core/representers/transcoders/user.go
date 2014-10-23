@@ -12,14 +12,14 @@ func UserFromRequest(from *representers.UserRequest, to *models.User) {
 		to.Password = *from.Password
 	}
 
-	to.Administrator = from.Administrator
+	to.Role = models.UserRole(from.Role)
 }
 
 func UserToResponse(from *models.User) representers.UserResponse {
 	return representers.UserResponse{
-		Id:            from.Id,
-		Username:      from.Username,
-		Administrator: from.Administrator,
+		Id:       from.Id,
+		Username: from.Username,
+		Role:     int(from.Role),
 	}
 }
 

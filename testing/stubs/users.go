@@ -2,7 +2,9 @@ package stubs
 
 import (
 	"database/sql"
+	"ephemeris/core/models"
 	"errors"
+	"strconv"
 	"strings"
 
 	"github.com/MendelGusmao/go-testdb"
@@ -13,15 +15,15 @@ var (
 	sqlSelectUser                = "SELECT * FROM `users` WHERE (`id` = ?) LIMIT 1"
 	sqlSelectUserWithPassword    = "SELECT * FROM `users` WHERE (`password` = ?) AND (`username` = ?) LIMIT 1"
 	sqlSelectUserWithPasswordAlt = "SELECT * FROM `users` WHERE (`username` = ?) AND (`password` = ?) LIMIT 1"
-	sqlUpdateUser                = "UPDATE `users` SET `administrator` = ?, `created_at` = ?, `password` = ?, `updated_at` = ?, `username` = ?  WHERE (`id` = ?)"
-	sqlInsertUser                = "INSERT INTO `users` (`administrator`,`created_at`,`password`,`updated_at`,`username`) VALUES (?,?,?,?,?)"
+	sqlUpdateUser                = "UPDATE `users` SET `created_at` = ?, `password` = ?, `role` = ?, `updated_at` = ?, `username` = ?  WHERE (`id` = ?)"
+	sqlInsertUser                = "INSERT INTO `users` (`created_at`,`password`,`role`,`updated_at`,`username`) VALUES (?,?,?,?,?)"
 	sqlDeleteUser                = "DELETE FROM `users`  WHERE (`id` = ?)"
 
 	userFields = []string{
 		"id",
 		"username",
 		"password",
-		"administrator",
+		"role",
 		"created_at",
 		"updated_at",
 	}
@@ -29,15 +31,26 @@ var (
 		"1",
 		"ephemeris",
 		"ephemeris",
-		"f",
+		"0",
 		"2014-08-25 18:55:49.111865-03",
 		"2014-08-25 19:01:05.492411-03",
 	}
 )
 
-func SelectAllUsers(result Result) {
+func UserData(role models.UserRole) []string {
+	newUserData := make([]string, len(userData))
+	copy(newUserData, userData)
+	newUserData[3] = strconv.Itoa(int(role))
+	return newUserData
+}
+
+func SelectAllUsers(result Result, userData []string) {
 	switch result {
 	case ResultSuccess:
+		if userData == nil {
+			panic("userData is nil")
+		}
+
 		testdb.StubQuery(sqlSelectAllUsers, testdb.RowsFromCSVString(userFields, strings.Join(userData, ",")))
 	case ResultNoRows:
 		testdb.StubQueryError(sqlSelectAllUsers, sql.ErrNoRows)
@@ -46,7 +59,7 @@ func SelectAllUsers(result Result) {
 	}
 }
 
-func SelectUser(result Result) {
+func SelectUser(result Result, userData []string) {
 	switch result {
 	case ResultSuccess:
 		rows := testdb.RowsFromCSVString(userFields, strings.Join(userData, ","))
@@ -58,7 +71,7 @@ func SelectUser(result Result) {
 	}
 }
 
-func SelectUserWithPassword(result Result) {
+func SelectUserWithPassword(result Result, userData []string) {
 	switch result {
 	case ResultSuccess:
 		rows := testdb.RowsFromCSVString(userFields, strings.Join(userData, ","))

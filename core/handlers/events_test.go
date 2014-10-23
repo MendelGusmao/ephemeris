@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"ephemeris/core/models"
 	"ephemeris/core/representers"
 	"ephemeris/testing/stubs"
 	"log"
@@ -47,7 +48,7 @@ var _ = Describe("Events", func() {
 
 	Context("Getting events", func() {
 		It("returns HTTP OK", func() {
-			stubs.SelectUser(stubs.ResultSuccess)
+			stubs.SelectUser(stubs.ResultSuccess, stubs.UserData(models.UserRoleNone))
 			stubs.SelectAllEvents(stubs.ResultSuccess)
 
 			Request("GET", eventsURI, false)
@@ -70,7 +71,7 @@ var _ = Describe("Events", func() {
 
 		It("returns HTTP Internal Server Error (error fetching event user)", func() {
 			stubs.SelectAllEvents(stubs.ResultSuccess)
-			stubs.SelectUser(stubs.ResultError)
+			stubs.SelectUser(stubs.ResultError, nil)
 
 			Request("GET", eventsURI, false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
@@ -80,8 +81,8 @@ var _ = Describe("Events", func() {
 	Context("Creating events", func() {
 		BeforeEach(func() {
 			stubs.UpdateUser(stubs.ResultSuccess)
-			stubs.SelectUser(stubs.ResultSuccess)
-			stubs.SelectUserWithPassword(stubs.ResultSuccess)
+			stubs.SelectUser(stubs.ResultSuccess, stubs.UserData(models.UserRoleManager))
+			stubs.SelectUserWithPassword(stubs.ResultSuccess, stubs.UserData(models.UserRoleManager))
 		})
 
 		It("returns a HTTP Created", func() {
@@ -103,7 +104,7 @@ var _ = Describe("Events", func() {
 
 	Context("Getting an event", func() {
 		It("returns HTTP OK", func() {
-			stubs.SelectUser(stubs.ResultSuccess)
+			stubs.SelectUser(stubs.ResultSuccess, stubs.UserData(models.UserRoleNone))
 			stubs.SelectEvent(stubs.ResultSuccess)
 
 			Request("GET", eventURI, false)
@@ -126,7 +127,7 @@ var _ = Describe("Events", func() {
 
 		It("returns HTTP Internal Server Error (error fetching event user)", func() {
 			stubs.SelectEvent(stubs.ResultSuccess)
-			stubs.SelectUser(stubs.ResultError)
+			stubs.SelectUser(stubs.ResultError, nil)
 
 			Request("GET", eventURI, false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
@@ -135,8 +136,8 @@ var _ = Describe("Events", func() {
 
 	Context("Updating an event", func() {
 		BeforeEach(func() {
-			stubs.SelectUser(stubs.ResultSuccess)
-			stubs.SelectUserWithPassword(stubs.ResultSuccess)
+			stubs.SelectUser(stubs.ResultSuccess, stubs.UserData(models.UserRoleManager))
+			stubs.SelectUserWithPassword(stubs.ResultSuccess, stubs.UserData(models.UserRoleManager))
 		})
 
 		It("returns HTTP No Content", func() {
@@ -176,8 +177,8 @@ var _ = Describe("Events", func() {
 
 	Context("Deleting an event", func() {
 		BeforeEach(func() {
-			stubs.SelectUser(stubs.ResultSuccess)
-			stubs.SelectUserWithPassword(stubs.ResultSuccess)
+			stubs.SelectUser(stubs.ResultSuccess, stubs.UserData(models.UserRoleManager))
+			stubs.SelectUserWithPassword(stubs.ResultSuccess, stubs.UserData(models.UserRoleManager))
 		})
 
 		It("returns HTTP No Content", func() {

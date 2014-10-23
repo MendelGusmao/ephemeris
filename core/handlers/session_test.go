@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"ephemeris/core/models"
 	"ephemeris/testing/stubs"
 	"net/http"
 
@@ -21,8 +22,8 @@ var _ = Describe("Session", func() {
 
 	Context("Checking", func() {
 		BeforeEach(func() {
-			stubs.SelectUser(stubs.ResultNoRows)
-			stubs.SelectUserWithPassword(stubs.ResultSuccess)
+			stubs.SelectUser(stubs.ResultNoRows, nil)
+			stubs.SelectUserWithPassword(stubs.ResultSuccess, stubs.UserData(models.UserRoleNone))
 		})
 
 		It("returns HTTP Forbidden", func() {
@@ -39,24 +40,24 @@ var _ = Describe("Session", func() {
 
 	Context("Logging in", func() {
 		It("returns HTTP Not Found", func() {
-			stubs.SelectUser(stubs.ResultNoRows)
-			stubs.SelectUserWithPassword(stubs.ResultNoRows)
+			stubs.SelectUser(stubs.ResultNoRows, nil)
+			stubs.SelectUserWithPassword(stubs.ResultNoRows, nil)
 
 			Login(false)
 			Expect(response.Code).To(Equal(http.StatusNotFound))
 		})
 
 		It("returns HTTP Created", func() {
-			stubs.SelectUser(stubs.ResultNoRows)
-			stubs.SelectUserWithPassword(stubs.ResultSuccess)
+			stubs.SelectUser(stubs.ResultNoRows, nil)
+			stubs.SelectUserWithPassword(stubs.ResultSuccess, stubs.UserData(models.UserRoleNone))
 
 			Login(false)
 			Expect(response.Code).To(Equal(http.StatusCreated))
 		})
 
 		It("returns HTTP No Content", func() {
-			stubs.SelectUser(stubs.ResultNoRows)
-			stubs.SelectUserWithPassword(stubs.ResultSuccess)
+			stubs.SelectUser(stubs.ResultNoRows, nil)
+			stubs.SelectUserWithPassword(stubs.ResultSuccess, stubs.UserData(models.UserRoleNone))
 
 			Login(false)
 			Login(true)
@@ -64,7 +65,7 @@ var _ = Describe("Session", func() {
 		})
 
 		It("returns HTTP Internal Server Error", func() {
-			stubs.SelectUserWithPassword(stubs.ResultError)
+			stubs.SelectUserWithPassword(stubs.ResultError, nil)
 
 			Login(false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
@@ -73,8 +74,8 @@ var _ = Describe("Session", func() {
 
 	Context("Logging out", func() {
 		It("returns HTTP No Content", func() {
-			stubs.SelectUser(stubs.ResultSuccess)
-			stubs.SelectUserWithPassword(stubs.ResultSuccess)
+			stubs.SelectUser(stubs.ResultSuccess, stubs.UserData(models.UserRoleNone))
+			stubs.SelectUserWithPassword(stubs.ResultSuccess, stubs.UserData(models.UserRoleNone))
 
 			Login(false)
 			Request("DELETE", uri, true)

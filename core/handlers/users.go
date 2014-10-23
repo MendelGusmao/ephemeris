@@ -22,12 +22,14 @@ import (
 
 func init() {
 	routes.Register(func(r martini.Router) {
-		r.Get("/users", middleware.Authorize(), users)
-		r.Post("/users", middleware.Authorize(), binding.Bind(representers.UserRequest{}), createUser)
+		r.Get("/users", middleware.Authorize(models.UserRoleAdministrator), users)
+		r.Post("/users", middleware.Authorize(models.UserRoleAdministrator),
+			binding.Bind(representers.UserRequest{}), createUser)
 
-		r.Get("/users/:id", middleware.Authorize(), user)
-		r.Put("/users/:id", middleware.Authorize(), binding.Bind(representers.UserRequest{}), updateUser)
-		r.Delete("/users/:id", middleware.Authorize(), deleteUser)
+		r.Get("/users/:id", middleware.Authorize(models.UserRoleRegular), user)
+		r.Put("/users/:id", middleware.Authorize(models.UserRoleAdministrator),
+			binding.Bind(representers.UserRequest{}), updateUser)
+		r.Delete("/users/:id", middleware.Authorize(models.UserRoleAdministrator), deleteUser)
 	})
 }
 
