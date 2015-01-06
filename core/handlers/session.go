@@ -5,7 +5,6 @@ import (
 	"ephemeris/core"
 	"ephemeris/core/middleware"
 	"ephemeris/core/models"
-	"ephemeris/core/representers"
 	"ephemeris/core/routes"
 	"fmt"
 	"log/syslog"
@@ -21,7 +20,7 @@ import (
 func init() {
 	routes.Register(func(r martini.Router) {
 		r.Get("/session", session)
-		r.Post("/session", binding.Bind(representers.UserCredentials{}), newSession)
+		r.Post("/session", binding.Bind(models.UserCredentials{}), newSession)
 		r.Delete("/session", middleware.Authorize(models.UserRoleNone), destroySession)
 	})
 }
@@ -43,7 +42,7 @@ func newSession(
 	logger core.Logger,
 	renderer render.Render,
 	session sessions.Session,
-	credentials representers.UserCredentials,
+	credentials models.UserCredentials,
 ) {
 	if session.Get("user.id") != nil {
 		renderer.Status(http.StatusNoContent)

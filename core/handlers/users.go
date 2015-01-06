@@ -5,8 +5,6 @@ import (
 	"ephemeris/core"
 	"ephemeris/core/middleware"
 	"ephemeris/core/models"
-	"ephemeris/core/representers"
-	"ephemeris/core/representers/transcoders"
 	"ephemeris/core/routes"
 	"fmt"
 	"log/syslog"
@@ -24,23 +22,23 @@ func init() {
 	routes.Register(func(r martini.Router) {
 		r.Get("/users", middleware.Authorize(models.UserRoleAdministrator), users)
 		r.Post("/users", middleware.Authorize(models.UserRoleAdministrator),
-			binding.Bind(representers.UserRequest{}), createUser)
+			binding.Bind(models.UserRequest{}), createUser)
 
 		r.Get("/users/:id", middleware.Authorize(models.UserRoleRegular), user)
 		r.Put("/users/:id", middleware.Authorize(models.UserRoleAdministrator),
-			binding.Bind(representers.UserRequest{}), updateUser)
+			binding.Bind(models.UserRequest{}), updateUser)
 		r.Delete("/users/:id", middleware.Authorize(models.UserRoleAdministrator), deleteUser)
 	})
 }
 
 func createUser(
 	database *gorm.DB,
-	userRequest representers.UserRequest,
+	userRequest models.UserRequest,
 	logger core.Logger,
 	renderer render.Render,
 ) {
 	user := models.User{}
-	transcoders.UserFromRequest(&userRequest, &user)
+	models.UserFromRequest(&userRequest, &user)
 
 	if query := database.Save(&user); query.Error != nil {
 		logger.Log(syslog.LOG_ERR, query.Error)
@@ -72,14 +70,14 @@ func users(
 		return
 	}
 
-	representedUsers := make([]representers.UserResponse, len(users))
+	representedUsers := make([]models.UserResponse, len(users))
 
 	for index, user := range users {
 		if user.UpdatedAt.Unix() > lastModified.Unix() {
 			lastModified = user.UpdatedAt
 		}
 
-		representedUsers[index] = transcoders.UserToResponse(&user)
+		representedUsers[index] = models.UserToResponse(&user)
 	}
 
 	renderer.Header().Add("Last-Modified", lastModified.UTC().Format(time.RFC1123))
@@ -109,12 +107,12 @@ func user(
 	}
 
 	renderer.Header().Add("Last-Modified", user.CreatedAt.UTC().Format(time.RFC1123))
-	renderer.JSON(http.StatusOK, transcoders.UserToResponse(&user))
+	renderer.JSON(http.StatusOK, models.UserToResponse(&user))
 }
 
 func updateUser(
 	database *gorm.DB,
-	userRequest representers.UserRequest,
+	userRequest models.UserRequest,
 	logger core.Logger,
 	params martini.Params,
 	renderer render.Render,
@@ -133,7 +131,7 @@ func updateUser(
 		return
 	}
 
-	transcoders.UserFromRequest(&userRequest, &user)
+	models.UserFromRequest(&userRequest, &user)
 
 	if query := database.Save(user); query.Error != nil {
 		logger.Log(syslog.LOG_ERR, query.Error)

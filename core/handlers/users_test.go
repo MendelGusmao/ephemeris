@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"ephemeris/core/models"
-	"ephemeris/core/representers"
 	"ephemeris/testing/fake"
 	"ephemeris/testing/stubs"
 	"log"
@@ -21,7 +20,7 @@ var _ = Describe("Users", func() {
 		userURI  = "/api/users/1"
 	)
 
-	user := representers.UserRequest{
+	user := models.UserRequest{
 		Username: "Test User",
 		Password: fake.String("Test Password"),
 		Role:     int(models.UserRoleRegular),

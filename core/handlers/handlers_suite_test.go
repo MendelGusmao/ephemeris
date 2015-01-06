@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"ephemeris/core/config"
-	"ephemeris/core/representers"
+	"ephemeris/core/models"
 	"ephemeris/core/server"
 	"ephemeris/testing/fake"
 	"fmt"
@@ -82,7 +82,7 @@ func PostRequest(method, route string, body io.Reader, useCookie bool) {
 }
 
 func Login(useCookie bool) {
-	body, err := json.Marshal(representers.UserRequest{
+	body, err := json.Marshal(models.UserRequest{
 		Username: "ephemeris",
 		Password: fake.String("ephemeris"),
 	})

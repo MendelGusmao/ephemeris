@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"ephemeris/core/models"
-	"ephemeris/core/representers"
 	"ephemeris/testing/stubs"
 	"log"
 	"net/http"
@@ -22,7 +21,7 @@ var _ = Describe("Events", func() {
 		eventURI  = "/api/events/1"
 	)
 
-	event := representers.EventRequest{
+	event := models.EventRequest{
 		Name:        "Test Name",
 		Place:       "Test Place",
 		Description: "Test Description",

@@ -5,8 +5,6 @@ import (
 	"ephemeris/core"
 	"ephemeris/core/middleware"
 	"ephemeris/core/models"
-	"ephemeris/core/representers"
-	"ephemeris/core/representers/transcoders"
 	"ephemeris/core/routes"
 	"fmt"
 	"log/syslog"
@@ -24,24 +22,24 @@ func init() {
 	routes.Register(func(r martini.Router) {
 		r.Get("/events", events)
 		r.Post("/events", middleware.Authorize(models.UserRoleManager),
-			binding.Bind(representers.EventRequest{}), createEvent)
+			binding.Bind(models.EventRequest{}), createEvent)
 
 		r.Get("/events/:id", event)
 		r.Put("/events/:id", middleware.Authorize(models.UserRoleManager),
-			binding.Bind(representers.EventRequest{}), updateEvent)
+			binding.Bind(models.EventRequest{}), updateEvent)
 		r.Delete("/events/:id", middleware.Authorize(models.UserRoleManager), deleteEvent)
 	})
 }
 
 func createEvent(
 	database *gorm.DB,
-	eventRequest representers.EventRequest,
+	eventRequest models.EventRequest,
 	logger core.Logger,
 	renderer render.Render,
 	user *models.User,
 ) {
 	event := models.Event{User: *user}
-	transcoders.EventFromRequest(&eventRequest, &event)
+	models.EventFromRequest(&eventRequest, &event)
 
 	if query := database.Save(&event); query.Error != nil {
 		logger.Log(syslog.LOG_ERR, query.Error)
@@ -73,7 +71,7 @@ func events(
 		return
 	}
 
-	representedEvents := make([]representers.EventResponse, len(events))
+	representedEvents := make([]models.EventResponse, len(events))
 
 	for index, event := range events {
 		if event.UpdatedAt.Unix() > lastModified.Unix() {
@@ -86,7 +84,7 @@ func events(
 			return
 		}
 
-		representedEvents[index] = transcoders.EventToResponse(&event)
+		representedEvents[index] = models.EventToResponse(&event)
 	}
 
 	renderer.Header().Add("Last-Modified", lastModified.UTC().Format(time.RFC1123))
@@ -121,12 +119,12 @@ func event(
 	}
 
 	renderer.Header().Add("Last-Modified", event.UpdatedAt.UTC().Format(time.RFC1123))
-	renderer.JSON(http.StatusOK, transcoders.EventToResponse(&event))
+	renderer.JSON(http.StatusOK, models.EventToResponse(&event))
 }
 
 func updateEvent(
 	database *gorm.DB,
-	eventRequest representers.EventRequest,
+	eventRequest models.EventRequest,
 	logger core.Logger,
 	params martini.Params,
 	renderer render.Render,
@@ -145,7 +143,7 @@ func updateEvent(
 		return
 	}
 
-	transcoders.EventFromRequest(&eventRequest, &event)
+	models.EventFromRequest(&eventRequest, &event)
 
 	if query := database.Save(event); query.Error != nil {
 		logger.Log(syslog.LOG_ERR, query.Error)
