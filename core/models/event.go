@@ -18,8 +18,17 @@ const (
 )
 
 var (
-	day, _       = time.ParseDuration("24h")
-	validSchemes = []string{"http", "https", "ftp", "data"}
+	day, _            = time.ParseDuration("24h")
+	validSchemes      = []string{"http", "https", "ftp", "data"}
+	validVisibilities = []string{
+		EventVisibilityPublic,
+		EventVisibilityPrivate,
+	}
+	validStatuses = []string{
+		EventStatusOpen,
+		EventStatusOnHold,
+		EventStatusCancelled,
+	}
 )
 
 type Event struct {
@@ -176,6 +185,7 @@ func (event *EventRequest) validateURL(value, field string) {
 	for _, scheme := range validSchemes {
 		if scheme == uri.Scheme {
 			ok = true
+			break
 		}
 	}
 
@@ -189,8 +199,16 @@ func (event *EventRequest) validateURL(value, field string) {
 }
 
 func (event *EventRequest) validateEnums() {
-	if event.Visibility != EventVisibilityPrivate &&
-		event.Visibility != EventVisibilityPublic {
+	ok := false
+
+	for _, visibility := range validVisibilities {
+		if event.Visibility == visibility {
+			ok = true
+			break
+		}
+	}
+
+	if !ok {
 		event.errors = append(event.errors, binding.Error{
 			FieldNames:     []string{"visibility"},
 			Classification: "EnumError",
@@ -198,9 +216,16 @@ func (event *EventRequest) validateEnums() {
 		})
 	}
 
-	if event.Status != EventStatusCancelled &&
-		event.Status != EventStatusOpen &&
-		event.Status != EventStatusOnHold {
+	ok = false
+
+	for _, status := range validStatuses {
+		if event.Status == status {
+			ok = true
+			break
+		}
+	}
+
+	if !ok {
 		event.errors = append(event.errors, binding.Error{
 			FieldNames:     []string{"status"},
 			Classification: "EnumError",

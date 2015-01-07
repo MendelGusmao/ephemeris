@@ -14,7 +14,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Users", func() {
+var _ = Describe("Users Handlers", func() {
 	var (
 		usersURI = "/api/users"
 		userURI  = "/api/users/1"

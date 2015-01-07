@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Session", func() {
+var _ = Describe("Session Handlers", func() {
 	var (
 		uri = sessionURI
 	)

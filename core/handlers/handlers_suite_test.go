@@ -47,7 +47,7 @@ func TestMain(t *testing.T) {
 
 	testdb.EnableTimeParsingWithFormat(postgresDateFormat)
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Main Suite")
+	RunSpecs(t, "Handlers Suite")
 }
 
 func Request(method, route string, useCookie bool) {

@@ -14,7 +14,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Events", func() {
+var _ = Describe("Events Handlers", func() {
 	var (
 		day, _    = time.ParseDuration("24h")
 		eventsURI = "/api/events"

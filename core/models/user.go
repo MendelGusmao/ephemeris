@@ -17,6 +17,16 @@ const (
 	UserRoleAdministrator UserRole = 4
 )
 
+var (
+	validUserRoles = []UserRole{
+		UserRoleNone,
+		UserRoleRegular,
+		UserRoleAccrediting,
+		UserRoleManager,
+		UserRoleAdministrator,
+	}
+)
+
 type UserRole int
 
 type User struct {
@@ -26,6 +36,25 @@ type User struct {
 	Role      UserRole
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+type UserResponse struct {
+	Id       int    `json:"id,omitempty"`
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty"`
+	Role     int    `json:"role,omitempty"`
+}
+
+type UserRequest struct {
+	Username string  `json:"username,omitempty"`
+	Password *string `json:"password,omitempty"`
+	Role     int     `json:"roles,omitempty"`
+
+	errors binding.Errors
+}
+
+type UserCredentials struct {
+	UserRequest
 }
 
 func (ur *UserRole) Scan(value interface{}) error {
@@ -70,36 +99,25 @@ func (ur UserRole) String() string {
 	return ""
 }
 
-type UserResponse struct {
-	Id       int    `json:"id,omitempty"`
-	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
-	Role     int    `json:"role,omitempty"`
-}
-
-type UserRequest struct {
-	Username string  `json:"username,omitempty"`
-	Password *string `json:"password,omitempty"`
-	Role     int     `json:"roles,omitempty"`
-}
-
-type UserCredentials struct {
-	UserRequest
-}
-
 func (user *UserRequest) Validate(errors binding.Errors, request *http.Request) binding.Errors {
-	switch UserRole(user.Role) {
-	case UserRoleRegular, UserRoleAccrediting,
-		UserRoleManager, UserRoleAdministrator:
-	default:
-		errors = append(errors, binding.Error{
+	ok := false
+
+	for _, role := range validUserRoles {
+		if role == UserRole(user.Role) {
+			ok = true
+			break
+		}
+	}
+
+	if !ok {
+		user.errors = append(user.errors, binding.Error{
 			FieldNames:     []string{"roles"},
 			Classification: "RolesError",
 			Message:        fmt.Sprintf("Invalid role: '%d'", user.Role),
 		})
 	}
 
-	return errors
+	return user.errors
 }
 
 func (credentials *UserCredentials) Validate(errors binding.Errors, request *http.Request) binding.Errors {
