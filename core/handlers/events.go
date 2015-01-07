@@ -26,7 +26,7 @@ func init() {
 
 		r.Get("/events/:id", event)
 		r.Put("/events/:id", middleware.Authorize(models.UserRoleManager),
-			binding.Bind(models.EventRequest{}), updateEvent)
+			binding.Bind(models.EventUpdateRequest{}), updateEvent)
 		r.Delete("/events/:id", middleware.Authorize(models.UserRoleManager), deleteEvent)
 	})
 }
@@ -124,7 +124,7 @@ func event(
 
 func updateEvent(
 	database *gorm.DB,
-	eventRequest models.EventRequest,
+	eventUpdateRequest models.EventUpdateRequest,
 	logger core.Logger,
 	params martini.Params,
 	renderer render.Render,
@@ -143,7 +143,7 @@ func updateEvent(
 		return
 	}
 
-	models.EventFromRequest(&eventRequest, &event)
+	models.EventFromRequest(&eventUpdateRequest.EventRequest, &event)
 
 	if query := database.Save(event); query.Error != nil {
 		logger.Log(syslog.LOG_ERR, query.Error)

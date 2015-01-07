@@ -75,10 +75,23 @@ type EventRequest struct {
 	errors binding.Errors `json:"-"`
 }
 
+type EventUpdateRequest struct {
+	EventRequest
+}
+
 func (event *EventRequest) Validate(errors binding.Errors, request *http.Request) binding.Errors {
 	event.errors = errors
 
 	event.validateDates()
+	event.validateURLs()
+	event.validateEnums()
+
+	return event.errors
+}
+
+func (event *EventUpdateRequest) Validate(errors binding.Errors, request *http.Request) binding.Errors {
+	event.errors = errors
+
 	event.validateURLs()
 	event.validateEnums()
 
