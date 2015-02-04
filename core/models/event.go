@@ -88,6 +88,40 @@ type EventUpdateRequest struct {
 	EventRequest
 }
 
+func (event *Event) Update(from *EventRequest) {
+	event.Name = from.Name
+	event.Place = from.Place
+	event.Description = from.Description
+	event.URL = from.URL
+	event.LogoURL = from.LogoURL
+	event.Beginning = from.Beginning
+	event.End = from.End
+	event.Visibility = from.Visibility
+	event.Status = from.Status
+	event.RegistrationBeginning = from.RegistrationBeginning
+	event.RegistrationEnd = from.RegistrationEnd
+}
+
+func (event *Event) ToResponse() EventResponse {
+	return EventResponse{
+		Id:                    event.Id,
+		Name:                  event.Name,
+		Place:                 event.Place,
+		Description:           event.Description,
+		URL:                   event.URL,
+		LogoURL:               event.LogoURL,
+		Beginning:             event.Beginning,
+		End:                   event.End,
+		Visibility:            event.Visibility,
+		Status:                event.Status,
+		RegistrationBeginning: event.RegistrationBeginning,
+		RegistrationEnd:       event.RegistrationEnd,
+		User:                  event.User.ToPrivateResponse(),
+		CreatedAt:             event.CreatedAt,
+		UpdatedAt:             event.UpdatedAt,
+	}
+}
+
 func (event *EventRequest) Validate(errors binding.Errors, request *http.Request) binding.Errors {
 	event.errors = errors
 

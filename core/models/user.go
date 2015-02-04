@@ -57,6 +57,30 @@ type UserCredentials struct {
 	UserRequest
 }
 
+func (user *User) Update(from *UserRequest) {
+	user.Username = from.Username
+
+	if from.Password != nil {
+		user.Password = *from.Password
+	}
+
+	user.Role = UserRole(from.Role)
+}
+
+func (user *User) ToResponse() UserResponse {
+	return UserResponse{
+		Id:       user.Id,
+		Username: user.Username,
+		Role:     int(user.Role),
+	}
+}
+
+func (user *User) ToPrivateResponse() UserResponse {
+	return UserResponse{
+		Username: user.Username,
+	}
+}
+
 func (ur *UserRole) Scan(value interface{}) error {
 	if value == nil {
 		*ur = UserRoleNone

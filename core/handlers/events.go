@@ -39,7 +39,7 @@ func createEvent(
 	user *models.User,
 ) {
 	event := models.Event{User: *user}
-	models.EventFromRequest(&eventRequest, &event)
+	event.Update(&eventRequest)
 
 	if query := database.Save(&event); query.Error != nil {
 		logger.Log(syslog.LOG_ERR, query.Error)
@@ -84,7 +84,7 @@ func events(
 			return
 		}
 
-		representedEvents[index] = models.EventToResponse(&event)
+		representedEvents[index] = event.ToResponse()
 	}
 
 	renderer.Header().Add("Last-Modified", lastModified.UTC().Format(time.RFC1123))
@@ -119,7 +119,7 @@ func event(
 	}
 
 	renderer.Header().Add("Last-Modified", event.UpdatedAt.UTC().Format(time.RFC1123))
-	renderer.JSON(http.StatusOK, models.EventToResponse(&event))
+	renderer.JSON(http.StatusOK, event.ToResponse())
 }
 
 func updateEvent(
@@ -143,7 +143,7 @@ func updateEvent(
 		return
 	}
 
-	models.EventFromRequest(&eventUpdateRequest.EventRequest, &event)
+	event.Update(&eventUpdateRequest.EventRequest)
 
 	if query := database.Save(event); query.Error != nil {
 		logger.Log(syslog.LOG_ERR, query.Error)

@@ -38,7 +38,7 @@ func createUser(
 	renderer render.Render,
 ) {
 	user := models.User{}
-	models.UserFromRequest(&userRequest, &user)
+	user.Update(&userRequest)
 
 	if query := database.Save(&user); query.Error != nil {
 		logger.Log(syslog.LOG_ERR, query.Error)
@@ -77,7 +77,7 @@ func users(
 			lastModified = user.UpdatedAt
 		}
 
-		representedUsers[index] = models.UserToResponse(&user)
+		representedUsers[index] = user.ToResponse()
 	}
 
 	renderer.Header().Add("Last-Modified", lastModified.UTC().Format(time.RFC1123))
@@ -107,7 +107,7 @@ func user(
 	}
 
 	renderer.Header().Add("Last-Modified", user.CreatedAt.UTC().Format(time.RFC1123))
-	renderer.JSON(http.StatusOK, models.UserToResponse(&user))
+	renderer.JSON(http.StatusOK, user.ToResponse())
 }
 
 func updateUser(
@@ -131,7 +131,7 @@ func updateUser(
 		return
 	}
 
-	models.UserFromRequest(&userRequest, &user)
+	user.Update(&userRequest)
 
 	if query := database.Save(user); query.Error != nil {
 		logger.Log(syslog.LOG_ERR, query.Error)
