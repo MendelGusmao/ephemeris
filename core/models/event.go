@@ -269,5 +269,5 @@ func (event *EventRequest) validateEnums() {
 }
 
 func init() {
-	register(Event{})
+	register(&Event{})
 }

@@ -165,5 +165,5 @@ func (credentials *UserCredentials) Validate(errors binding.Errors, request *htt
 }
 
 func init() {
-	register(User{})
+	register(&User{})
 }

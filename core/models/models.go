@@ -6,8 +6,8 @@ import (
 
 var models = make([]interface{}, 0)
 
-func register(model interface{}) {
-	models = append(models, model)
+func register(model ...interface{}) {
+	models = append(models, model...)
 }
 
 func BuildDatabase(db gorm.DB) []error {
