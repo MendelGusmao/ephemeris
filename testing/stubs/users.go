@@ -13,6 +13,7 @@ import (
 var (
 	sqlSelectAllUsers            = "SELECT * FROM `users`"
 	sqlSelectUser                = "SELECT * FROM `users` WHERE (`id` = ?) LIMIT 1"
+	sqlSelectUserAlt             = "SELECT * FROM `users`  WHERE (`id` in (?))"
 	sqlSelectUserWithPassword    = "SELECT * FROM `users` WHERE (`password` = ?) AND (`username` = ?) LIMIT 1"
 	sqlSelectUserWithPasswordAlt = "SELECT * FROM `users` WHERE (`username` = ?) AND (`password` = ?) LIMIT 1"
 	sqlUpdateUser                = "UPDATE `users` SET `created_at` = ?, `password` = ?, `role` = ?, `updated_at` = ?, `username` = ?  WHERE (`id` = ?)"
@@ -64,10 +65,14 @@ func SelectUser(result Result, userData []string) {
 	case ResultSuccess:
 		rows := testdb.RowsFromCSVString(userFields, strings.Join(userData, ","))
 		testdb.StubQuery(sqlSelectUser, rows)
+		testdb.StubQuery(sqlSelectUserAlt, rows)
 	case ResultNoRows:
 		testdb.StubQueryError(sqlSelectUser, sql.ErrNoRows)
+		testdb.StubQuery(sqlSelectUserAlt, sql.ErrNoRows)
 	case ResultError:
-		testdb.StubQueryError(sqlSelectUser, errors.New("Forged error: SelectUser."))
+		err := errors.New("Forged error: SelectUser.")
+		testdb.StubQueryError(sqlSelectUser, err)
+		testdb.StubQueryError(sqlSelectUserAlt, err)
 	}
 }
 

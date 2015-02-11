@@ -59,7 +59,7 @@ func events(
 	events := make([]models.Event, 0)
 	lastModified := time.Time{}
 
-	if query := database.Find(&events); query.Error != nil {
+	if query := database.Preload("User").Find(&events); query.Error != nil {
 		// TODO gorm doesn't return gorm.RecordNotFound when using testdb as driver
 		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			renderer.Status(http.StatusNoContent)
@@ -78,12 +78,6 @@ func events(
 			lastModified = event.UpdatedAt
 		}
 
-		if query := database.Model(event).Related(&event.User); query.Error != nil {
-			logger.Log(syslog.LOG_ERR, query.Error)
-			renderer.Status(http.StatusInternalServerError)
-			return
-		}
-
 		representedEvents[index] = event.ToResponse()
 	}
 
@@ -100,19 +94,13 @@ func event(
 	id, _ := strconv.Atoi(params["id"])
 	event := models.Event{Id: id}
 
-	if query := database.Find(&event); query.Error != nil {
+	if query := database.Preload("User").Find(&event); query.Error != nil {
 		// TODO gorm doesn't return gorm.RecordNotFound when using testdb as driver
 		if query.Error == gorm.RecordNotFound || query.Error == sql.ErrNoRows {
 			renderer.Status(http.StatusNotFound)
 			return
 		}
 
-		logger.Log(syslog.LOG_ERR, query.Error)
-		renderer.Status(http.StatusInternalServerError)
-		return
-	}
-
-	if query := database.Model(event).Related(&event.User); query.Error != nil {
 		logger.Log(syslog.LOG_ERR, query.Error)
 		renderer.Status(http.StatusInternalServerError)
 		return

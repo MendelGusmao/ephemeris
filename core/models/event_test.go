@@ -7,9 +7,6 @@ import (
 )
 
 var _ = Describe("Event Model", func() {
-	BeforeEach(func() {
-	})
-
 	Context("Validating an event", func() {
 		It("returns an Invalid URL error", func() {
 			event := EventRequest{}

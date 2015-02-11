@@ -67,14 +67,6 @@ var _ = Describe("Events Handlers", func() {
 			Request("GET", eventsURI, false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
 		})
-
-		It("returns HTTP Internal Server Error (error fetching event user)", func() {
-			stubs.SelectAllEvents(stubs.ResultSuccess)
-			stubs.SelectUser(stubs.ResultError, nil)
-
-			Request("GET", eventsURI, false)
-			Expect(response.Code).To(Equal(http.StatusInternalServerError))
-		})
 	})
 
 	Context("Creating events", func() {
@@ -119,14 +111,6 @@ var _ = Describe("Events Handlers", func() {
 
 		It("returns HTTP Internal Server Error (error fetching event)", func() {
 			stubs.SelectEvent(stubs.ResultError)
-
-			Request("GET", eventURI, false)
-			Expect(response.Code).To(Equal(http.StatusInternalServerError))
-		})
-
-		It("returns HTTP Internal Server Error (error fetching event user)", func() {
-			stubs.SelectEvent(stubs.ResultSuccess)
-			stubs.SelectUser(stubs.ResultError, nil)
 
 			Request("GET", eventURI, false)
 			Expect(response.Code).To(Equal(http.StatusInternalServerError))
